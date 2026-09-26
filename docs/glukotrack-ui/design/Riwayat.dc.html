@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>GlukoTrack — Riwayat</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#E9EDEF}
+a{color:#0B5F66}a:hover{color:#084A50}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F5F7F8; font-family: 'Plus Jakarta Sans', sans-serif; color: #1F2933; box-sizing: border-box; font-variant-numeric: tabular-nums">
+<div style="padding: 28px 20px 0; display: flex; flex-direction: column; gap: 14px">
+
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h1 style="margin: 0; font-size: 24px; font-weight: 700">Riwayat</h1>
+<div style="display: flex; padding: 3px; background: #EEF1F3; border-radius: 12px; gap: 2px">
+<button style="height: 36px; padding: 0 14px; border: none; border-radius: 9px; background: #FFFFFF; color: #0B5F66; font-family: inherit; font-size: 13px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.12)">Daftar</button>
+<button style="height: 36px; padding: 0 14px; border: none; border-radius: 9px; background: transparent; color: #5B6770; font-family: inherit; font-size: 13px; font-weight: 700">Kalender</button>
+</div>
+</div>
+
+<div style="display: flex; gap: 8px">
+<button style="height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid #0E7C86; background: #0E7C86; color: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 700">Semua</button>
+<button style="height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid #D5DCE0; background: #FFFFFF; color: #1F2933; font-family: inherit; font-size: 13px; font-weight: 600">Puasa</button>
+<button style="height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid #D5DCE0; background: #FFFFFF; color: #1F2933; font-family: inherit; font-size: 13px; font-weight: 600">Sewaktu</button>
+<button style="height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid #D5DCE0; background: #FFFFFF; color: #1F2933; font-family: inherit; font-size: 13px; font-weight: 600">2 Jam PP</button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 14px">
+<sc-for list="{{groups}}" as="g" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #5B6770; padding-left: 4px">{{g.title}}</span>
+<div style="background: #FFFFFF; border: 1px solid #E8EDF0; border-radius: 16px; padding: 0 14px">
+<sc-for list="{{g.items}}" as="it" hint-placeholder-count="2">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 10px 0; text-decoration: none; color: #1F2933; border-top: {{it.border}}">
+<span style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: {{it.codeBg}}; color: {{it.codeFg}}; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800">{{it.code}}</span>
+<span style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: 15px; font-weight: 600">{{it.type}}</span><span style="font-size: 12px; color: #5B6770">{{it.meta}}</span></span>
+<span style="font-size: 18px; font-weight: 700">{{it.value}}</span>
+<span style="width: 78px; flex-shrink: 0; text-align: center; padding: 4px 0; border-radius: 999px; background: {{it.bg}}; color: {{it.fg}}; font-size: 12px; font-weight: 700">{{it.label}}</span>
+</a>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<a href="Catat.dc.html" aria-label="Catat gula darah" style="position: absolute; right: 20px; bottom: 92px; width: 56px; height: 56px; border-radius: 28px; background: #0E7C86; color: #FFFFFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(14, 124, 134, 0.32)">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 2.4; stroke-linecap: round"><path d="M12 5v14M5 12h14"></path></svg>
+</a>
+
+<nav style="position: absolute; left: 0; right: 0; bottom: 0; height: 76px; background: #FFFFFF; border-top: 1px solid #E3E8EB; display: flex; justify-content: space-around; align-items: center; padding-bottom: 6px; box-sizing: border-box">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; text-decoration: none; color: #5B6770; font-size: 12px; font-weight: 600">
+<span style="padding: 4px 18px; display: flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg></span>Beranda</a>
+<a href="Riwayat.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; text-decoration: none; color: #0B5F66; font-size: 12px; font-weight: 700">
+<span style="padding: 4px 18px; border-radius: 16px; background: #DDF1F2; display: flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>Riwayat</a>
+<a href="Tren.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; text-decoration: none; color: #5B6770; font-size: 12px; font-weight: 600">
+<span style="padding: 4px 18px; display: flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round"><path d="M3 17l6-6 4 4 8-8"></path><path d="M15 7h6v6"></path></svg></span>Tren</a>
+<a href="Target.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; text-decoration: none; color: #5B6770; font-size: 12px; font-weight: 600">
+<span style="padding: 4px 18px; display: flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg></span>Setelan</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var S = {
+      low: { bg: '#EDE9FE', fg: '#5B21B6', label: '↓ Rendah' },
+      normal: { bg: '#DCFCE7', fg: '#166534', label: '✓ Normal' },
+      warning: { bg: '#FEF3C7', fg: '#92400E', label: '! Waspada' },
+      high: { bg: '#FEE2E2', fg: '#991B1B', label: '↑ Tinggi' }
+    };
+    var TYPE = {
+      puasa: { code: 'GDP', name: 'Puasa', bg: '#E0F2F3', fg: '#0B5F66', t: [70, 99, 125] },
+      sewaktu: { code: 'GDS', name: 'Sewaktu', bg: '#E6ECF5', fg: '#2F4A6D', t: [70, 139, 199] },
+      pp: { code: '2J', name: '2 Jam PP', bg: '#F3ECE3', fg: '#6B4A2B', t: [70, 139, 199] }
+    };
+    var row = function (type, value, meta, i) {
+      var d = TYPE[type];
+      var k = value < d.t[0] ? 'low' : (value <= d.t[1] ? 'normal' : (value <= d.t[2] ? 'warning' : 'high'));
+      return {
+        code: d.code, type: d.name, codeBg: d.bg, codeFg: d.fg,
+        value: value, meta: meta,
+        bg: S[k].bg, fg: S[k].fg, label: S[k].label,
+        border: i === 0 ? 'none' : '1px solid #EEF1F3'
+      };
+    };
+    var groups = [
+      { title: 'Hari ini · Sab, 26 Sep', items: [['puasa', 98, '06.12']] },
+      { title: 'Kemarin · Jum, 25 Sep', items: [['sewaktu', 156, '20.30 · setelah makan'], ['puasa', 97, '06.20']] },
+      { title: 'Kam, 24 Sep', items: [['pp', 212, '14.40 · Pusing, haus'], ['puasa', 101, '06.05']] },
+      { title: 'Rab, 23 Sep', items: [['sewaktu', 66, '16.10 · Gemetar'], ['puasa', 95, '06.15']] }
+    ].map(function (g) {
+      return { title: g.title, items: g.items.map(function (r, i) { return row(r[0], r[1], r[2], i); }) };
+    });
+    return { groups: groups };
+  }
+}
+</script>
+</body>
+</html>

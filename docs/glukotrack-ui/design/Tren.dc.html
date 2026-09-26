@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>GlukoTrack — Tren</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#E9EDEF}
+a{color:#0B5F66}a:hover{color:#084A50}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #F5F7F8; font-family: 'Plus Jakarta Sans', sans-serif; color: #1F2933; box-sizing: border-box; font-variant-numeric: tabular-nums">
+<div style="padding: 28px 20px 0; display: flex; flex-direction: column; gap: 14px">
+
+<h1 style="margin: 0; font-size: 24px; font-weight: 700">Tren</h1>
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #EEF1F3; border-radius: 14px">
+<button style="height: 38px; border: none; border-radius: 10px; background: transparent; color: #5B6770; font-family: inherit; font-size: 14px; font-weight: 700">7 hari</button>
+<button style="height: 38px; border: none; border-radius: 10px; background: #FFFFFF; color: #0B5F66; font-family: inherit; font-size: 14px; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.12)">14 hari</button>
+<button style="height: 38px; border: none; border-radius: 10px; background: transparent; color: #5B6770; font-family: inherit; font-size: 14px; font-weight: 700">30 hari</button>
+<button style="height: 38px; border: none; border-radius: 10px; background: transparent; color: #5B6770; font-family: inherit; font-size: 14px; font-weight: 700">90 hari</button>
+</div>
+
+<div style="background: #FFFFFF; border: 1px solid #E8EDF0; border-radius: 16px; padding: 14px 12px 10px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; gap: 8px; padding: 0 4px">
+<button onClick="{{toggleGdp}}" style="height: 34px; padding: 0 12px; border-radius: 17px; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 13px; font-weight: 700; border: 1px solid {{gdpChip.border}}; background: {{gdpChip.bg}}; color: #1F2933"><span style="width: 10px; height: 10px; border-radius: 5px; background: #0E7C86"></span>Puasa</button>
+<button onClick="{{toggleGds}}" style="height: 34px; padding: 0 12px; border-radius: 17px; display: flex; align-items: center; gap: 6px; font-family: inherit; font-size: 13px; font-weight: 700; border: 1px solid {{gdsChip.border}}; background: {{gdsChip.bg}}; color: #1F2933"><span style="width: 10px; height: 10px; border-radius: 5px; background: #3D5A80"></span>Sewaktu</button>
+</div>
+<svg width="342" height="214" viewBox="0 0 342 214" fill="none" aria-label="Grafik gula darah 14 hari">
+<rect x="36" y="{{bandY}}" width="298" height="{{bandH}}" fill="#16A34A" fill-opacity="0.1"></rect>
+<line x1="36" y1="33" x2="334" y2="33" stroke="#EEF1F3"></line>
+<line x1="36" y1="75" x2="334" y2="75" stroke="#EEF1F3"></line>
+<line x1="36" y1="117" x2="334" y2="117" stroke="#EEF1F3"></line>
+<line x1="36" y1="159" x2="334" y2="159" stroke="#EEF1F3"></line>
+<text x="28" y="37" fill="#5B6770" style="font-size: 11px; text-anchor: end">200</text>
+<text x="28" y="79" fill="#5B6770" style="font-size: 11px; text-anchor: end">160</text>
+<text x="28" y="121" fill="#5B6770" style="font-size: 11px; text-anchor: end">120</text>
+<text x="28" y="163" fill="#5B6770" style="font-size: 11px; text-anchor: end">80</text>
+<text x="330" y="{{bandLabelY}}" fill="#166534" style="font-size: 10.5px; font-weight: 600; text-anchor: end">Target puasa 70–99</text>
+<sc-if value="{{showGds}}" hint-placeholder-val="{{ true }}">
+<polyline points="{{gdsPoints}}" stroke="#3D5A80" style="stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"></polyline>
+<sc-for list="{{gdsDots}}" as="p" hint-placeholder-count="14">
+<circle cx="{{p.x}}" cy="{{p.y}}" r="3.5" fill="{{p.fill}}" stroke="#FFFFFF" style="stroke-width: 1.5"></circle>
+</sc-for>
+</sc-if>
+<sc-if value="{{showGdp}}" hint-placeholder-val="{{ true }}">
+<polyline points="{{gdpPoints}}" stroke="#0E7C86" style="stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round"></polyline>
+<sc-for list="{{gdpDots}}" as="p" hint-placeholder-count="14">
+<circle cx="{{p.x}}" cy="{{p.y}}" r="3.5" fill="{{p.fill}}" stroke="#FFFFFF" style="stroke-width: 1.5"></circle>
+</sc-for>
+</sc-if>
+<text x="40" y="206" fill="#5B6770" style="font-size: 11px">13 Sep</text>
+<text x="185" y="206" fill="#5B6770" style="font-size: 11px; text-anchor: middle">20 Sep</text>
+<text x="334" y="206" fill="#5B6770" style="font-size: 11px; text-anchor: end">26 Sep</text>
+</svg>
+<div style="display: flex; gap: 14px; padding: 0 4px; font-size: 11px; color: #5B6770">
+<span>Titik berwarna = status:</span>
+<span style="color: #166534; font-weight: 600">Normal</span>
+<span style="color: #92400E; font-weight: 600">Waspada</span>
+<span style="color: #991B1B; font-weight: 600">Tinggi</span>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+<div style="background: #FFFFFF; border: 1px solid #E8EDF0; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #5B6770">Rata-rata puasa</span>
+<span style="font-size: 26px; font-weight: 800">{{gdpAvg}} <span style="font-size: 12px; font-weight: 500; color: #5B6770">mg/dL</span></span>
+<span style="font-size: 12px; color: #5B6770">Min {{gdpMin}} · Maks {{gdpMax}}</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E8EDF0; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-size: 12px; font-weight: 600; color: #5B6770">Rata-rata sewaktu</span>
+<span style="font-size: 26px; font-weight: 800">{{gdsAvg}} <span style="font-size: 12px; font-weight: 500; color: #5B6770">mg/dL</span></span>
+<span style="font-size: 12px; color: #5B6770">Min {{gdsMin}} · Maks {{gdsMax}}</span>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E8EDF0; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 600; color: #5B6770">Puasa dalam target</span>
+<span style="font-size: 26px; font-weight: 800">{{gdpTir}}%</span>
+<div style="height: 6px; border-radius: 3px; background: #EEF1F3; overflow: hidden"><div style="height: 6px; background: #0E7C86; width: {{gdpTir}}%"></div></div>
+</div>
+<div style="background: #FFFFFF; border: 1px solid #E8EDF0; border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 600; color: #5B6770">Sewaktu dalam target</span>
+<span style="font-size: 26px; font-weight: 800">{{gdsTir}}%</span>
+<div style="height: 6px; border-radius: 3px; background: #EEF1F3; overflow: hidden"><div style="height: 6px; background: #3D5A80; width: {{gdsTir}}%"></div></div>
+</div>
+</div>
+</div>
+
+<nav style="position: absolute; left: 0; right: 0; bottom: 0; height: 76px; background: #FFFFFF; border-top: 1px solid #E3E8EB; display: flex; justify-content: space-around; align-items: center; padding-bottom: 6px; box-sizing: border-box">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; text-decoration: none; color: #5B6770; font-size: 12px; font-weight: 600">
+<span style="padding: 4px 18px; display: flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"></path></svg></span>Beranda</a>
+<a href="Riwayat.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; text-decoration: none; color: #5B6770; font-size: 12px; font-weight: 600">
+<span style="padding: 4px 18px; display: flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>Riwayat</a>
+<a href="Tren.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; text-decoration: none; color: #0B5F66; font-size: 12px; font-weight: 700">
+<span style="padding: 4px 18px; border-radius: 16px; background: #DDF1F2; display: flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round"><path d="M3 17l6-6 4 4 8-8"></path><path d="M15 7h6v6"></path></svg></span>Tren</a>
+<a href="Target.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 72px; text-decoration: none; color: #5B6770; font-size: 12px; font-weight: 600">
+<span style="padding: 4px 18px; display: flex"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg></span>Setelan</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { showGdp: true, showGds: true };
+  }
+  renderVals() {
+    var self = this;
+    var GDP = [104, 99, 97, 103, 101, 96, 100, 98, 102, 99, 95, 101, 97, 98];
+    var GDS = [162, 148, 171, 139, 155, 144, 158, 150, 137, 166, 149, 141, 152, 156];
+    var y = function (v) { return 12 + (220 - v) / 160 * 168; };
+    var x = function (i) { return 44 + i * (282 / 13); };
+    var status = function (v, t) {
+      if (v < t[0]) return '#7C3AED';
+      if (v <= t[1]) return '#16A34A';
+      if (v <= t[2]) return '#D97706';
+      return '#DC2626';
+    };
+    var line = function (a) { return a.map(function (v, i) { return x(i).toFixed(1) + ',' + y(v).toFixed(1); }).join(' '); };
+    var dots = function (a, t) { return a.map(function (v, i) { return { x: x(i), y: y(v), fill: status(v, t) }; }); };
+    var avg = function (a) { return Math.round(a.reduce(function (s, v) { return s + v; }, 0) / a.length); };
+    var tir = function (a, t) { return Math.round(a.filter(function (v) { return v >= t[0] && v <= t[1]; }).length / a.length * 100); };
+    var TP = [70, 99, 125], TS = [70, 139, 199];
+    var chip = function (on) { return on ? { bg: '#F1F4F5', border: '#A7B1B8' } : { bg: '#FFFFFF', border: '#E3E8EB' }; };
+    return {
+      bandY: y(99), bandH: y(70) - y(99), bandLabelY: y(70) - 5,
+      gdpPoints: line(GDP), gdsPoints: line(GDS),
+      gdpDots: dots(GDP, TP), gdsDots: dots(GDS, TS),
+      gdpAvg: avg(GDP), gdsAvg: avg(GDS),
+      gdpMin: Math.min.apply(null, GDP), gdpMax: Math.max.apply(null, GDP),
+      gdsMin: Math.min.apply(null, GDS), gdsMax: Math.max.apply(null, GDS),
+      gdpTir: tir(GDP, TP), gdsTir: tir(GDS, TS),
+      showGdp: this.state.showGdp, showGds: this.state.showGds,
+      gdpChip: chip(this.state.showGdp), gdsChip: chip(this.state.showGds),
+      toggleGdp: function () { self.setState({ showGdp: !self.state.showGdp }); },
+      toggleGds: function () { self.setState({ showGds: !self.state.showGds }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

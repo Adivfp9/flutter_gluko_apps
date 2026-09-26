@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>GlukoTrack — Catat Gula Darah</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap">
+<style>
+body{margin:0;background:#E9EDEF}
+a{color:#0B5F66}a:hover{color:#084A50}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; position: relative; overflow: hidden; background: #5E676D; font-family: 'Plus Jakarta Sans', sans-serif; color: #1F2933; box-sizing: border-box; font-variant-numeric: tabular-nums">
+<div style="position: absolute; left: 0; right: 0; top: 40px; bottom: 0; background: #FFFFFF; border-radius: 24px 24px 0 0; padding: 10px 20px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px">
+<div style="align-self: center; width: 40px; height: 4px; border-radius: 2px; background: #D5DCE0"></div>
+
+<div style="display: flex; justify-content: space-between; align-items: center">
+<h1 style="margin: 0; font-size: 20px; font-weight: 700">Catat Gula Darah</h1>
+<a href="Main.dc.html" aria-label="Tutup" style="width: 44px; height: 44px; border-radius: 22px; background: #F1F4F5; color: #1F2933; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" style="stroke-width: 2; stroke-linecap: round"><path d="M6 6l12 12M18 6 6 18"></path></svg>
+</a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding: 4px; background: #EEF1F3; border-radius: 14px">
+<sc-for list="{{tabs}}" as="tab" hint-placeholder-count="3">
+<button onClick="{{tab.pick}}" style="height: 40px; border: none; border-radius: 10px; font-family: inherit; font-size: 14px; font-weight: 700; background: {{tab.bg}}; color: {{tab.fg}}; box-shadow: {{tab.shadow}}">{{tab.label}}</button>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px 0">
+<div style="display: flex; align-items: baseline; gap: 6px">
+<span style="font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -0.03em">{{display}}</span>
+<span style="font-size: 16px; font-weight: 600; color: #5B6770">mg/dL</span>
+</div>
+<span style="padding: 5px 14px; border-radius: 999px; font-size: 13px; font-weight: 700; background: {{st.bg}}; color: {{st.fg}}">{{st.label}}</span>
+<span style="font-size: 12px; color: #5B6770">{{targetText}}</span>
+</div>
+
+<div style="display: flex; flex-direction: column; border: 1px solid #E8EDF0; border-radius: 14px">
+<button style="height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 14px; background: transparent; border: none; font-family: inherit; color: #1F2933; text-align: left">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B6770" style="stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+<span style="flex-grow: 1; font-size: 14px; color: #5B6770">Waktu</span>
+<span style="font-size: 14px; font-weight: 600">Hari ini, 06.12</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B6770" style="stroke-width: 2; stroke-linecap: round; stroke-linejoin: round"><path d="M9 6l6 6-6 6"></path></svg>
+</button>
+<sc-if value="{{isPuasa}}" hint-placeholder-val="{{ true }}">
+<label style="height: 48px; display: flex; align-items: center; gap: 10px; padding: 0 14px; border-top: 1px solid #EEF1F3; font-size: 14px">
+<input type="checkbox" checked="{{fasted}}" onChange="{{toggleFast}}" style="width: 20px; height: 20px; accent-color: #0E7C86; margin: 0">
+<span style="flex-grow: 1">Sudah puasa minimal 8 jam</span>
+</label>
+</sc-if>
+<sc-if value="{{isNotPuasa}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid #EEF1F3; flex-wrap: wrap">
+<span style="font-size: 14px; color: #5B6770; margin-right: 4px">Konteks</span>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #0E7C86; background: #DDF1F2; color: #0B5F66; font-family: inherit; font-size: 13px; font-weight: 600">Setelah makan</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #D5DCE0; background: #FFFFFF; color: #1F2933; font-family: inherit; font-size: 13px; font-weight: 600">Sebelum makan</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #D5DCE0; background: #FFFFFF; color: #1F2933; font-family: inherit; font-size: 13px; font-weight: 600">Sebelum tidur</button>
+</div>
+</sc-if>
+<div style="display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-top: 1px solid #EEF1F3; flex-wrap: wrap">
+<span style="font-size: 14px; color: #5B6770; margin-right: 4px">Gejala</span>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #D5DCE0; background: #FFFFFF; color: #1F2933; font-family: inherit; font-size: 13px; font-weight: 600">Pusing</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #D5DCE0; background: #FFFFFF; color: #1F2933; font-family: inherit; font-size: 13px; font-weight: 600">Gemetar</button>
+<button style="height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid #D5DCE0; background: #FFFFFF; color: #1F2933; font-family: inherit; font-size: 13px; font-weight: 600">Lemas</button>
+<button aria-label="Gejala lainnya" style="height: 32px; width: 32px; border-radius: 16px; border: 1px dashed #A7B1B8; background: #FFFFFF; color: #5B6770; font-family: inherit; font-size: 16px; font-weight: 600">+</button>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: auto">
+<sc-for list="{{keys}}" as="k" hint-placeholder-count="12">
+<button onClick="{{k.press}}" aria-label="{{k.aria}}" style="height: 50px; border: none; border-radius: 12px; background: #F1F4F5; color: #1F2933; font-family: inherit; font-size: 22px; font-weight: 600">{{k.label}}</button>
+</sc-for>
+</div>
+
+<a href="Main.dc.html" style="height: 54px; border-radius: 14px; background: #0E7C86; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; text-decoration: none">Simpan</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { type: 'puasa', value: '112', fasted: true };
+  }
+  press(k) {
+    var v = this.state.value;
+    if (k === 'C') { this.setState({ value: '' }); return; }
+    if (k === '⌫') { this.setState({ value: v.slice(0, -1) }); return; }
+    if (v.length >= 3) return;
+    if (v === '' && k === '0') return;
+    this.setState({ value: v + k });
+  }
+  renderVals() {
+    var self = this;
+    var T = { puasa: [70, 99, 125], sewaktu: [70, 139, 199], pp: [70, 139, 199] };
+    var S = {
+      empty: { bg: '#EEF1F3', fg: '#5B6770', label: 'Masukkan nilai' },
+      low: { bg: '#EDE9FE', fg: '#5B21B6', label: '↓ Rendah' },
+      normal: { bg: '#DCFCE7', fg: '#166534', label: '✓ Normal' },
+      warning: { bg: '#FEF3C7', fg: '#92400E', label: '! Waspada' },
+      high: { bg: '#FEE2E2', fg: '#991B1B', label: '↑ Tinggi' }
+    };
+    var t = T[this.state.type];
+    var v = parseInt(this.state.value || '0', 10);
+    var key = !this.state.value ? 'empty' : (v < t[0] ? 'low' : (v <= t[1] ? 'normal' : (v <= t[2] ? 'warning' : 'high')));
+    var tabs = [
+      { id: 'puasa', label: 'Puasa' },
+      { id: 'sewaktu', label: 'Sewaktu' },
+      { id: 'pp', label: '2 Jam PP' }
+    ].map(function (x) {
+      var on = x.id === self.state.type;
+      return {
+        label: x.label,
+        bg: on ? '#FFFFFF' : 'transparent',
+        fg: on ? '#0B5F66' : '#5B6770',
+        shadow: on ? '0 1px 3px rgba(0,0,0,0.12)' : 'none',
+        pick: function () { self.setState({ type: x.id }); }
+      };
+    });
+    var keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'C', '0', '⌫'].map(function (k) {
+      return {
+        label: k,
+        aria: k === '⌫' ? 'Hapus satu angka' : (k === 'C' ? 'Kosongkan' : k),
+        press: function () { self.press(k); }
+      };
+    });
+    return {
+      tabs: tabs,
+      keys: keys,
+      display: this.state.value || '—',
+      st: S[key],
+      targetText: 'Target normal ' + t[0] + '–' + t[1] + ' mg/dL',
+      isPuasa: this.state.type === 'puasa',
+      isNotPuasa: this.state.type !== 'puasa',
+      fasted: this.state.fasted,
+      toggleFast: function () { self.setState({ fasted: !self.state.fasted }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
