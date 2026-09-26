@@ -19,6 +19,8 @@ import 'package:flutter_gluko_apps/database/daos/profile_dao.dart' as _i598;
 import 'package:flutter_gluko_apps/database/daos/reminder_dao.dart' as _i216;
 import 'package:flutter_gluko_apps/database/daos/settings_dao.dart' as _i851;
 import 'package:flutter_gluko_apps/database/daos/target_dao.dart' as _i385;
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/classify_reading.dart'
+    as _i725;
 import 'package:flutter_gluko_apps/features/onboarding/presentation/cubit/onboarding_cubit.dart'
     as _i1062;
 import 'package:flutter_gluko_apps/features/profile/data/repositories/profile_repository_impl.dart'
@@ -59,6 +61,7 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final databaseModule = _$DatabaseModule();
+    gh.factory<_i725.ClassifyReading>(() => const _i725.ClassifyReading());
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => databaseModule.secureStorage,
     );
