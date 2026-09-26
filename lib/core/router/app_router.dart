@@ -3,6 +3,7 @@ import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/router/app_shell.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/dashboard_page.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/history_page.dart';
+import 'package:flutter_gluko_apps/features/glucose/presentation/pages/reading_detail_page.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/reading_form_page.dart';
 import 'package:flutter_gluko_apps/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:flutter_gluko_apps/features/settings/presentation/pages/settings_page.dart';
@@ -21,6 +22,7 @@ abstract final class AppRoute {
   static const String history = 'history';
   static const String trend = 'trend';
   static const String settings = 'settings';
+  static const String readingDetail = 'readingDetail';
   static const String record = 'record';
   static const String splash = 'splash';
   static const String onboarding = 'onboarding';
@@ -56,7 +58,23 @@ GoRouter createRouter({String initialLocation = '/'}) {
           for (final type in ReadingType.values) {
             if (type.dbValue == rawType) initialType = type;
           }
-          return ReadingFormPage(initialType: initialType);
+          // `?edit=<id>` membuka form dalam mode sunting (PRD F-05 AC3).
+          final editId = int.tryParse(state.uri.queryParameters['edit'] ?? '');
+          return ReadingFormPage(initialType: initialType, editId: editId);
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/catatan/:id',
+        name: AppRoute.readingDetail,
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return const Scaffold(
+              body: Center(child: Text('Catatan tidak ditemukan.')),
+            );
+          }
+          return ReadingDetailPage(readingId: id);
         },
       ),
       StatefulShellRoute.indexedStack(

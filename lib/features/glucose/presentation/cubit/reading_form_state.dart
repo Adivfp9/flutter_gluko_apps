@@ -28,11 +28,17 @@ abstract class ReadingFormState with _$ReadingFormState {
     String? errorMessage,
     DuplicateFastingFailure? duplicateFasting,
     GlucoseReading? savedReading,
+
+    /// Terisi saat form dipakai menyunting catatan lama (PRD F-05 AC3).
+    int? editingId,
   }) = _ReadingFormState;
 
   const new _();
 
   bool get isReady => !isLoading && measuredAt != null && targets != null;
+
+  /// Form sedang menyunting catatan lama, bukan membuat catatan baru.
+  bool get isEditing => editingId != null;
 
   bool get canSubmit =>
       isReady &&

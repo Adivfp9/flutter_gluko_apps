@@ -35,10 +35,14 @@ import 'package:flutter_gluko_apps/features/glucose/domain/usecases/find_fasting
     as _i360;
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/reclassify_readings.dart'
     as _i146;
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/update_reading.dart'
+    as _i206;
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/watch_dashboard.dart'
     as _i39;
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/dashboard_cubit.dart'
     as _i94;
+import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/history_cubit.dart'
+    as _i414;
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_cubit.dart'
     as _i89;
 import 'package:flutter_gluko_apps/features/onboarding/presentation/cubit/onboarding_cubit.dart'
@@ -126,6 +130,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i634.TargetRepository>(
       () => _i224.TargetRepositoryImpl(gh<_i385.TargetDao>()),
     );
+    gh.factory<_i206.UpdateReading>(
+      () => _i206.UpdateReading(
+        gh<_i848.GlucoseRepository>(),
+        gh<_i634.TargetRepository>(),
+        gh<_i725.ClassifyReading>(),
+      ),
+    );
     gh.factory<_i1073.DeleteReading>(
       () => _i1073.DeleteReading(gh<_i848.GlucoseRepository>()),
     );
@@ -176,6 +187,24 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i725.ClassifyReading>(),
       ),
     );
+    gh.factory<_i89.ReadingFormCubit>(
+      () => _i89.ReadingFormCubit(
+        gh<_i104.AddReading>(),
+        gh<_i206.UpdateReading>(),
+        gh<_i135.GetTargets>(),
+        gh<_i849.GetProfile>(),
+        gh<_i360.FindFastingOn>(),
+        gh<_i725.ClassifyReading>(),
+      ),
+    );
+    gh.factory<_i414.HistoryCubit>(
+      () => _i414.HistoryCubit(
+        gh<_i848.GlucoseRepository>(),
+        gh<_i525.ProfileRepository>(),
+        gh<_i1073.DeleteReading>(),
+        gh<_i1073.RestoreReading>(),
+      ),
+    );
     gh.factory<_i94.DashboardCubit>(
       () => _i94.DashboardCubit(
         gh<_i39.WatchDashboard>(),
@@ -189,15 +218,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i534.ResetTargets>(),
         gh<_i849.GetProfile>(),
         gh<_i146.ReclassifyReadings>(),
-      ),
-    );
-    gh.factory<_i89.ReadingFormCubit>(
-      () => _i89.ReadingFormCubit(
-        gh<_i104.AddReading>(),
-        gh<_i135.GetTargets>(),
-        gh<_i849.GetProfile>(),
-        gh<_i360.FindFastingOn>(),
-        gh<_i725.ClassifyReading>(),
       ),
     );
     gh.factory<_i93.CompleteOnboarding>(

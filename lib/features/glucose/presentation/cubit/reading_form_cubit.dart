@@ -4,9 +4,11 @@ import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/core/usecase/usecase.dart';
 import 'package:flutter_gluko_apps/core/utils/local_date.dart';
 import 'package:flutter_gluko_apps/core/utils/unit_converter.dart';
+import 'package:flutter_gluko_apps/features/glucose/domain/entities/glucose_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/add_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/classify_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/find_fasting_on.dart';
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/update_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_state.dart';
 import 'package:flutter_gluko_apps/features/profile/domain/usecases/get_profile.dart';
 import 'package:flutter_gluko_apps/features/target/domain/usecases/get_targets.dart';
@@ -17,6 +19,7 @@ import 'package:injectable/injectable.dart';
 class ReadingFormCubit extends Cubit<ReadingFormState> {
   new(
     this._addReading,
+    this._updateReading,
     this._getTargets,
     this._getProfile,
     this._findFastingOn,
@@ -26,6 +29,7 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
 
   new withClock(
     this._addReading,
+    this._updateReading,
     this._getTargets,
     this._getProfile,
     this._findFastingOn,
@@ -34,6 +38,7 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
   ) : super(const ReadingFormState());
 
   final AddReading _addReading;
+  final UpdateReading _updateReading;
   final GetTargets _getTargets;
   final GetProfile _getProfile;
   final FindFastingOn _findFastingOn;
@@ -92,6 +97,53 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
             ? MealContext.afterMeal
             : null,
         hoursAfterMeal: type == ReadingType.postprandial2h ? 2 : null,
+      ),
+    );
+    _refreshClassification();
+  }
+
+  /// Memuat form untuk menyunting catatan lama (PRD F-05 AC3).
+  ///
+  /// Seluruh field diisi dari catatan yang ada, termasuk waktu pengukurannya,
+  /// supaya menyimpan tanpa mengubah apa pun tidak menggeser data.
+  Future<void> initializeForEdit(GlucoseReading reading) async {
+    emit(
+      state.copyWith(
+        isLoading: true,
+        isSubmitting: false,
+        errorMessage: null,
+        savedReading: null,
+        duplicateFasting: null,
+      ),
+    );
+
+    final profileResult = await _getProfile(const NoParams());
+    final profileFailure = profileResult.getLeft().toNullable();
+    if (profileFailure != null) return _initializationFailed(profileFailure);
+
+    final targetsResult = await _getTargets(const NoParams());
+    final targetsFailure = targetsResult.getLeft().toNullable();
+    if (targetsFailure != null) return _initializationFailed(targetsFailure);
+
+    final unit = profileResult.getRight().toNullable()!.unit;
+
+    emit(
+      state.copyWith(
+        isLoading: false,
+        editingId: reading.id,
+        type: reading.type,
+        unit: unit,
+        targets: targetsResult.getRight().toNullable(),
+        valueMgDl: reading.valueMgDl,
+        rawValue: UnitConverter.formatValue(reading.valueMgDl, unit),
+        measuredAt: reading.measuredAtLocal,
+        mealContext: reading.mealContext,
+        hoursAfterMeal: reading.hoursAfterMeal,
+        symptoms: reading.symptoms.toSet(),
+        note: reading.note ?? '',
+        // Catatan puasa yang sudah tersimpan berarti konfirmasinya pernah
+        // diberikan; tidak perlu diminta ulang saat menyunting.
+        fastingConfirmed: true,
       ),
     );
     _refreshClassification();
@@ -203,19 +255,33 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
         savedReading: null,
       ),
     );
-    final result = await _addReading(
-      AddReadingParams(
-        type: state.type,
-        valueMgDl: state.valueMgDl!,
-        measuredAt: state.measuredAt!,
-        mealContext: state.mealContext,
-        hoursAfterMeal: state.hoursAfterMeal,
-        symptoms: state.symptoms.toList(growable: false),
-        note: state.note,
-        fastingConfirmed: state.fastingConfirmed,
-        duplicateAction: duplicateAction,
-      ),
-    );
+    final editingId = state.editingId;
+    final result = editingId == null
+        ? await _addReading(
+            AddReadingParams(
+              type: state.type,
+              valueMgDl: state.valueMgDl!,
+              measuredAt: state.measuredAt!,
+              mealContext: state.mealContext,
+              hoursAfterMeal: state.hoursAfterMeal,
+              symptoms: state.symptoms.toList(growable: false),
+              note: state.note,
+              fastingConfirmed: state.fastingConfirmed,
+              duplicateAction: duplicateAction,
+            ),
+          )
+        : await _updateReading(
+            UpdateReadingParams(
+              id: editingId,
+              type: state.type,
+              valueMgDl: state.valueMgDl!,
+              measuredAt: state.measuredAt!,
+              mealContext: state.mealContext,
+              hoursAfterMeal: state.hoursAfterMeal,
+              symptoms: state.symptoms.toList(growable: false),
+              note: state.note,
+            ),
+          );
 
     switch (result) {
       case Left(value: final DuplicateFastingFailure failure):

@@ -9,29 +9,36 @@ import 'package:flutter_gluko_apps/core/theme/app_palette.dart';
 import 'package:flutter_gluko_apps/core/theme/app_spacing.dart';
 import 'package:flutter_gluko_apps/core/utils/unit_converter.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/entities/glucose_reading.dart';
+import 'package:flutter_gluko_apps/features/glucose/domain/repositories/glucose_repository.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/add_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_cubit.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_state.dart';
 import 'package:go_router/go_router.dart';
 
 class ReadingFormPage extends StatelessWidget {
-  const new({this.initialType, super.key});
+  const new({this.initialType, this.editId, super.key});
 
   final ReadingType? initialType;
+
+  /// Bila terisi, form menyunting catatan tersebut alih-alih membuat baru.
+  final int? editId;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => getIt<ReadingFormCubit>(),
-      child: ReadingFormView(initialType: initialType),
+      child: ReadingFormView(initialType: initialType, editId: editId),
     );
   }
 }
 
 class ReadingFormView extends StatefulWidget {
-  const new({this.initialType, super.key});
+  const new({this.initialType, this.editId, super.key});
 
   final ReadingType? initialType;
+
+  /// Id catatan yang sedang disunting (PRD F-05 AC3).
+  final int? editId;
 
   @override
   State<ReadingFormView> createState() => _ReadingFormViewState();
@@ -41,11 +48,29 @@ class _ReadingFormViewState extends State<ReadingFormView> {
   @override
   void initState() {
     super.initState();
-    unawaited(
-      context.read<ReadingFormCubit>().initialize(
-        initialType: widget.initialType,
-      ),
-    );
+    unawaited(_bootstrap());
+  }
+
+  /// Mode sunting memuat catatan lama dulu; mode catat baru langsung memakai
+  /// tipe saran.
+  Future<void> _bootstrap() async {
+    final cubit = context.read<ReadingFormCubit>();
+    final editId = widget.editId;
+
+    if (editId == null) {
+      await cubit.initialize(initialType: widget.initialType);
+      return;
+    }
+
+    final existing = await getIt<GlucoseRepository>().findById(editId);
+    final reading = existing.getOrElse((_) => null);
+    if (reading == null) {
+      // Catatan hilang di antara ketukan tombol dan pembukaan form: jangan
+      // diam-diam membuat catatan baru, kembali saja.
+      if (mounted) Navigator.of(context).maybePop();
+      return;
+    }
+    await cubit.initializeForEdit(reading);
   }
 
   @override

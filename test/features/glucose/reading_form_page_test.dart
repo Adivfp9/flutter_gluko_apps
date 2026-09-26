@@ -8,6 +8,7 @@ import 'package:flutter_gluko_apps/features/glucose/data/repositories/glucose_re
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/add_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/classify_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/find_fasting_on.dart';
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/update_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_cubit.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/reading_form_page.dart';
 import 'package:flutter_gluko_apps/features/profile/data/repositories/profile_repository_impl.dart';
@@ -40,6 +41,7 @@ void main() {
         const ClassifyReading(),
         () => now,
       ),
+      UpdateReading(readings, targets, const ClassifyReading()),
       GetTargets(targets),
       GetProfile(profiles),
       FindFastingOn(readings),
