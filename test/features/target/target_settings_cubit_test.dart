@@ -6,7 +6,6 @@ import 'package:flutter_gluko_apps/features/glucose/domain/usecases/classify_rea
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/reclassify_readings.dart';
 import 'package:flutter_gluko_apps/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:flutter_gluko_apps/features/profile/domain/usecases/get_profile.dart';
-import 'package:flutter_gluko_apps/features/profile/domain/usecases/save_profile.dart';
 import 'package:flutter_gluko_apps/features/target/data/repositories/target_repository_impl.dart';
 import 'package:flutter_gluko_apps/features/target/domain/usecases/get_targets.dart';
 import 'package:flutter_gluko_apps/features/target/domain/usecases/reset_targets.dart';
@@ -36,7 +35,6 @@ void main() {
       saveTargets,
       ResetTargets(saveTargets),
       GetProfile(profiles),
-      SaveProfile(profiles),
       ReclassifyReadings(
         GlucoseRepositoryImpl(db.glucoseDao),
         const ClassifyReading(),
@@ -109,6 +107,61 @@ void main() {
         (await profiles.getProfile()).getRight().toNullable()!.unit,
         GlucoseUnit.mmolL,
       );
+    },
+  );
+
+  blocTest<TargetSettingsCubit, TargetSettingsState>(
+    'input target kosong tidak dapat disimpan dan tetap terlihat kosong',
+    build: createCubit,
+    act: (cubit) async {
+      await cubit.initialize();
+      cubit.updateThresholdInput(
+        ReadingType.fasting,
+        TargetBoundary.lowMax,
+        '',
+      );
+    },
+    verify: (cubit) {
+      expect(
+        cubit.state.inputFor(ReadingType.fasting, TargetBoundary.lowMax),
+        isEmpty,
+      );
+      expect(cubit.state.canSave, isFalse);
+      expect(cubit.state.validationMessage, contains('wajib'));
+    },
+  );
+
+  blocTest<TargetSettingsCubit, TargetSettingsState>(
+    'reset sesudah mengubah preset Diabetes kembali ke default Diabetes',
+    build: createCubit,
+    act: (cubit) async {
+      await cubit.initialize();
+      cubit
+        ..selectPreset(TargetPreset.diabetes)
+        ..updateThresholdInput(
+          ReadingType.fasting,
+          TargetBoundary.normalMax,
+          '140',
+        );
+      await cubit.reset();
+    },
+    verify: (cubit) {
+      expect(cubit.state.selectedPreset, TargetPreset.diabetes);
+      expect(cubit.state.targets!.forType(ReadingType.fasting).normalMax, 130);
+    },
+  );
+
+  blocTest<TargetSettingsCubit, TargetSettingsState>(
+    'menolak hitung ulang ketika target masih berupa draft',
+    build: createCubit,
+    act: (cubit) async {
+      await cubit.initialize();
+      cubit.selectPreset(TargetPreset.diabetes);
+      await cubit.reclassify();
+    },
+    verify: (cubit) {
+      expect(cubit.state.isReclassifying, isFalse);
+      expect(cubit.state.errorMessage, contains('Simpan target'));
     },
   );
 }

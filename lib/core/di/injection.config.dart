@@ -159,7 +159,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i521.SaveTargets>(),
         gh<_i534.ResetTargets>(),
         gh<_i849.GetProfile>(),
-        gh<_i550.SaveProfile>(),
         gh<_i146.ReclassifyReadings>(),
       ),
     );

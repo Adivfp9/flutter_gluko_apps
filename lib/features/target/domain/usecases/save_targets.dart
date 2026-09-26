@@ -1,3 +1,4 @@
+import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/core/usecase/usecase.dart';
 import 'package:flutter_gluko_apps/features/profile/domain/repositories/profile_repository.dart';
@@ -18,18 +19,21 @@ class SaveTargets implements UseCase<Unit, TargetSet> {
   final ProfileRepository _profiles;
 
   @override
-  Future<Either<Failure, Unit>> call(TargetSet params) async {
-    if (!params.isValid) {
+  Future<Either<Failure, Unit>> call(TargetSet params) => _save(params);
+
+  Future<Either<Failure, Unit>> withUnit(TargetSet targets, GlucoseUnit unit) =>
+      _save(targets, unit: unit);
+
+  Future<Either<Failure, Unit>> _save(
+    TargetSet targets, {
+    GlucoseUnit? unit,
+  }) async {
+    if (!targets.isValid) {
       return const Left(
         ValidationFailure(
           'Ambang harus naik berurutan: rendah < normal < waspada.',
         ),
       );
-    }
-
-    final saved = await _targets.saveTargets(params);
-    if (saved case Left(value: final failure)) {
-      return Left(failure);
     }
 
     final profile = await _profiles.getProfile();
@@ -40,6 +44,9 @@ class SaveTargets implements UseCase<Unit, TargetSet> {
     // Preset diturunkan dari angkanya sendiri, jadi mengubah satu ambang
     // otomatis memindahkan profil ke preset "Kustom".
     final current = profile.getOrElse((_) => throw StateError('unreachable'));
-    return await _profiles.saveProfile(current.copyWith(preset: params.preset));
+    return await _targets.saveTargetsAndProfile(
+      targets,
+      current.copyWith(unit: unit ?? current.unit, preset: targets.preset),
+    );
   }
 }

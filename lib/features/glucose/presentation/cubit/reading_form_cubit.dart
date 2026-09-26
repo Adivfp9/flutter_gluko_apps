@@ -88,6 +88,10 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
         unit: profileResult.getRight().toNullable()!.unit,
         targets: targetsResult.getRight().toNullable(),
         measuredAt: now,
+        mealContext: type == ReadingType.postprandial2h
+            ? MealContext.afterMeal
+            : null,
+        hoursAfterMeal: type == ReadingType.postprandial2h ? 2 : null,
       ),
     );
     _refreshClassification();
@@ -107,13 +111,23 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
   }
 
   void setType(ReadingType type) {
+    final isPostprandial = type == ReadingType.postprandial2h;
+    final keepRandomMealTiming =
+        type == ReadingType.random &&
+        state.mealContext == MealContext.afterMeal;
     emit(
       state.copyWith(
         type: type,
-        mealContext: type == ReadingType.fasting ? null : state.mealContext,
-        hoursAfterMeal: type == ReadingType.fasting
+        mealContext: type == ReadingType.fasting
             ? null
-            : state.hoursAfterMeal,
+            : isPostprandial
+            ? MealContext.afterMeal
+            : state.mealContext,
+        hoursAfterMeal: isPostprandial
+            ? state.hoursAfterMeal ?? 2
+            : keepRandomMealTiming
+            ? state.hoursAfterMeal ?? 2
+            : null,
         duplicateFasting: null,
         errorMessage: null,
         savedReading: null,
@@ -133,8 +147,15 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
   void setFastingConfirmed({required bool value}) =>
       emit(state.copyWith(fastingConfirmed: value, errorMessage: null));
 
-  void setMealContext(MealContext? value) =>
-      emit(state.copyWith(mealContext: value, errorMessage: null));
+  void setMealContext(MealContext? value) => emit(
+    state.copyWith(
+      mealContext: value,
+      hoursAfterMeal: value == MealContext.afterMeal
+          ? state.hoursAfterMeal ?? 2
+          : null,
+      errorMessage: null,
+    ),
+  );
 
   void setHoursAfterMeal(double? value) =>
       emit(state.copyWith(hoursAfterMeal: value, errorMessage: null));

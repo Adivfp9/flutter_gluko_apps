@@ -1,10 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:flutter_gluko_apps/database/app_database.dart';
 import 'package:flutter_gluko_apps/database/tables/target_ranges_table.dart';
+import 'package:flutter_gluko_apps/database/tables/user_profile_table.dart';
 
 part 'target_dao.g.dart';
 
-@DriftAccessor(tables: [TargetRangesTable])
+@DriftAccessor(tables: [TargetRangesTable, UserProfileTable])
 class TargetDao extends DatabaseAccessor<AppDatabase> with _$TargetDaoMixin {
   new(super.attachedDatabase);
 
@@ -40,4 +41,15 @@ class TargetDao extends DatabaseAccessor<AppDatabase> with _$TargetDaoMixin {
           await upsert(row);
         }
       });
+
+  Future<void> upsertAllWithProfile(
+    List<TargetRangesTableCompanion> rows,
+    UserProfileTableCompanion profile,
+  ) => transaction(() async {
+    for (final row in rows) {
+      await upsert(row);
+    }
+    await into(userProfileTable)
+        .insertOnConflictUpdate(profile.copyWith(id: const Value(1)));
+  });
 }

@@ -6,6 +6,8 @@ part of 'target_dao.dart';
 mixin _$TargetDaoMixin on DatabaseAccessor<AppDatabase> {
   $TargetRangesTableTable get targetRangesTable =>
       attachedDatabase.targetRangesTable;
+  $UserProfileTableTable get userProfileTable =>
+      attachedDatabase.userProfileTable;
   TargetDaoManager get managers => TargetDaoManager(this);
 }
 
@@ -16,5 +18,10 @@ class TargetDaoManager {
       $$TargetRangesTableTableTableManager(
         _db.attachedDatabase,
         _db.targetRangesTable,
+      );
+  $$UserProfileTableTableTableManager get userProfileTable =>
+      $$UserProfileTableTableTableManager(
+        _db.attachedDatabase,
+        _db.userProfileTable,
       );
 }

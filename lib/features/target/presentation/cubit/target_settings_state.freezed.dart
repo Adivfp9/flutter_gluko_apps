@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TargetSettingsState {
 
- bool get isLoading; bool get isSaving; bool get isReclassifying; TargetSet? get targets; UserProfile? get profile; GlucoseUnit get unit; bool get saved; String? get errorMessage; String? get infoMessage;
+ bool get isLoading; bool get isSaving; bool get isReclassifying; TargetSet? get targets; UserProfile? get profile; GlucoseUnit get unit; Map<String, String> get thresholdInputs; TargetPreset get basePreset; bool get hasUnsavedChanges; bool get saved; String? get errorMessage; String? get infoMessage;
 /// Create a copy of TargetSettingsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $TargetSettingsStateCopyWith<TargetSettingsState> get copyWith => _$TargetSettin
 @override
 bool operator ==(Object other) {
   final _this = this as TargetSettingsState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TargetSettingsState&&(identical(other.isLoading, _this.isLoading) || other.isLoading == _this.isLoading)&&(identical(other.isSaving, _this.isSaving) || other.isSaving == _this.isSaving)&&(identical(other.isReclassifying, _this.isReclassifying) || other.isReclassifying == _this.isReclassifying)&&(identical(other.targets, _this.targets) || other.targets == _this.targets)&&(identical(other.profile, _this.profile) || other.profile == _this.profile)&&(identical(other.unit, _this.unit) || other.unit == _this.unit)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.errorMessage, _this.errorMessage) || other.errorMessage == _this.errorMessage)&&(identical(other.infoMessage, _this.infoMessage) || other.infoMessage == _this.infoMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TargetSettingsState&&(identical(other.isLoading, _this.isLoading) || other.isLoading == _this.isLoading)&&(identical(other.isSaving, _this.isSaving) || other.isSaving == _this.isSaving)&&(identical(other.isReclassifying, _this.isReclassifying) || other.isReclassifying == _this.isReclassifying)&&(identical(other.targets, _this.targets) || other.targets == _this.targets)&&(identical(other.profile, _this.profile) || other.profile == _this.profile)&&(identical(other.unit, _this.unit) || other.unit == _this.unit)&&const DeepCollectionEquality().equals(other.thresholdInputs, _this.thresholdInputs)&&(identical(other.basePreset, _this.basePreset) || other.basePreset == _this.basePreset)&&(identical(other.hasUnsavedChanges, _this.hasUnsavedChanges) || other.hasUnsavedChanges == _this.hasUnsavedChanges)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.errorMessage, _this.errorMessage) || other.errorMessage == _this.errorMessage)&&(identical(other.infoMessage, _this.infoMessage) || other.infoMessage == _this.infoMessage));
 }
 
 
 @override
 int get hashCode {
   final _this = this as TargetSettingsState;
-  return Object.hash(runtimeType,_this.isLoading,_this.isSaving,_this.isReclassifying,_this.targets,_this.profile,_this.unit,_this.saved,_this.errorMessage,_this.infoMessage);
+  return Object.hash(runtimeType,_this.isLoading,_this.isSaving,_this.isReclassifying,_this.targets,_this.profile,_this.unit,const DeepCollectionEquality().hash(_this.thresholdInputs),_this.basePreset,_this.hasUnsavedChanges,_this.saved,_this.errorMessage,_this.infoMessage);
 }
 
 @override
 String toString() {
   final _this = this as TargetSettingsState;
-  return 'TargetSettingsState(isLoading: ${_this.isLoading}, isSaving: ${_this.isSaving}, isReclassifying: ${_this.isReclassifying}, targets: ${_this.targets}, profile: ${_this.profile}, unit: ${_this.unit}, saved: ${_this.saved}, errorMessage: ${_this.errorMessage}, infoMessage: ${_this.infoMessage})';
+  return 'TargetSettingsState(isLoading: ${_this.isLoading}, isSaving: ${_this.isSaving}, isReclassifying: ${_this.isReclassifying}, targets: ${_this.targets}, profile: ${_this.profile}, unit: ${_this.unit}, thresholdInputs: ${_this.thresholdInputs}, basePreset: ${_this.basePreset}, hasUnsavedChanges: ${_this.hasUnsavedChanges}, saved: ${_this.saved}, errorMessage: ${_this.errorMessage}, infoMessage: ${_this.infoMessage})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $TargetSettingsStateCopyWith<$Res>  {
   factory $TargetSettingsStateCopyWith(TargetSettingsState value, $Res Function(TargetSettingsState) _then) = _$TargetSettingsStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, bool isSaving, bool isReclassifying, TargetSet? targets, UserProfile? profile, GlucoseUnit unit, bool saved, String? errorMessage, String? infoMessage
+ bool isLoading, bool isSaving, bool isReclassifying, TargetSet? targets, UserProfile? profile, GlucoseUnit unit, Map<String, String> thresholdInputs, TargetPreset basePreset, bool hasUnsavedChanges, bool saved, String? errorMessage, String? infoMessage
 });
 
 
@@ -68,7 +68,7 @@ class _$TargetSettingsStateCopyWithImpl<$Res>
 
 /// Create a copy of TargetSettingsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? isSaving = null,Object? isReclassifying = null,Object? targets = freezed,Object? profile = freezed,Object? unit = null,Object? saved = null,Object? errorMessage = freezed,Object? infoMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? isSaving = null,Object? isReclassifying = null,Object? targets = freezed,Object? profile = freezed,Object? unit = null,Object? thresholdInputs = null,Object? basePreset = null,Object? hasUnsavedChanges = null,Object? saved = null,Object? errorMessage = freezed,Object? infoMessage = freezed,}) {
   return _then(TargetSettingsState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isSaving: null == isSaving ? _self.isSaving : isSaving // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,10 @@ as bool,isReclassifying: null == isReclassifying ? _self.isReclassifying : isRec
 as bool,targets: freezed == targets ? _self.targets : targets // ignore: cast_nullable_to_non_nullable
 as TargetSet?,profile: freezed == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
 as UserProfile?,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as GlucoseUnit,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
+as GlucoseUnit,thresholdInputs: null == thresholdInputs ? _self.thresholdInputs : thresholdInputs // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,basePreset: null == basePreset ? _self.basePreset : basePreset // ignore: cast_nullable_to_non_nullable
+as TargetPreset,hasUnsavedChanges: null == hasUnsavedChanges ? _self.hasUnsavedChanges : hasUnsavedChanges // ignore: cast_nullable_to_non_nullable
+as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,infoMessage: freezed == infoMessage ? _self.infoMessage : infoMessage // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -176,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool isSaving,  bool isReclassifying,  TargetSet? targets,  UserProfile? profile,  GlucoseUnit unit,  bool saved,  String? errorMessage,  String? infoMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool isSaving,  bool isReclassifying,  TargetSet? targets,  UserProfile? profile,  GlucoseUnit unit,  Map<String, String> thresholdInputs,  TargetPreset basePreset,  bool hasUnsavedChanges,  bool saved,  String? errorMessage,  String? infoMessage)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TargetSettingsState() when $default != null:
-return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targets,_that.profile,_that.unit,_that.saved,_that.errorMessage,_that.infoMessage);case _:
+return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targets,_that.profile,_that.unit,_that.thresholdInputs,_that.basePreset,_that.hasUnsavedChanges,_that.saved,_that.errorMessage,_that.infoMessage);case _:
   return orElse();
 
 }
@@ -197,10 +200,10 @@ return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targe
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool isSaving,  bool isReclassifying,  TargetSet? targets,  UserProfile? profile,  GlucoseUnit unit,  bool saved,  String? errorMessage,  String? infoMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool isSaving,  bool isReclassifying,  TargetSet? targets,  UserProfile? profile,  GlucoseUnit unit,  Map<String, String> thresholdInputs,  TargetPreset basePreset,  bool hasUnsavedChanges,  bool saved,  String? errorMessage,  String? infoMessage)  $default,) {final _that = this;
 switch (_that) {
 case _TargetSettingsState():
-return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targets,_that.profile,_that.unit,_that.saved,_that.errorMessage,_that.infoMessage);case _:
+return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targets,_that.profile,_that.unit,_that.thresholdInputs,_that.basePreset,_that.hasUnsavedChanges,_that.saved,_that.errorMessage,_that.infoMessage);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +220,10 @@ return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targe
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool isSaving,  bool isReclassifying,  TargetSet? targets,  UserProfile? profile,  GlucoseUnit unit,  bool saved,  String? errorMessage,  String? infoMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool isSaving,  bool isReclassifying,  TargetSet? targets,  UserProfile? profile,  GlucoseUnit unit,  Map<String, String> thresholdInputs,  TargetPreset basePreset,  bool hasUnsavedChanges,  bool saved,  String? errorMessage,  String? infoMessage)?  $default,) {final _that = this;
 switch (_that) {
 case _TargetSettingsState() when $default != null:
-return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targets,_that.profile,_that.unit,_that.saved,_that.errorMessage,_that.infoMessage);case _:
+return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targets,_that.profile,_that.unit,_that.thresholdInputs,_that.basePreset,_that.hasUnsavedChanges,_that.saved,_that.errorMessage,_that.infoMessage);case _:
   return null;
 
 }
@@ -232,7 +235,7 @@ return $default(_that.isLoading,_that.isSaving,_that.isReclassifying,_that.targe
 
 
 class _TargetSettingsState extends TargetSettingsState {
-  const _TargetSettingsState({this.isLoading = false, this.isSaving = false, this.isReclassifying = false, this.targets, this.profile, this.unit = GlucoseUnit.mgDl, this.saved = false, this.errorMessage, this.infoMessage}): super._();
+  const _TargetSettingsState({this.isLoading = false, this.isSaving = false, this.isReclassifying = false, this.targets, this.profile, this.unit = GlucoseUnit.mgDl,  Map<String, String> thresholdInputs = const <String, String>{}, this.basePreset = TargetPreset.general, this.hasUnsavedChanges = false, this.saved = false, this.errorMessage, this.infoMessage}): _thresholdInputs = thresholdInputs,super._();
   
 
 @override@JsonKey() final  bool isLoading;
@@ -241,6 +244,15 @@ class _TargetSettingsState extends TargetSettingsState {
 @override final  TargetSet? targets;
 @override final  UserProfile? profile;
 @override@JsonKey() final  GlucoseUnit unit;
+ final  Map<String, String> _thresholdInputs;
+@override@JsonKey() Map<String, String> get thresholdInputs {
+  if (_thresholdInputs is EqualUnmodifiableMapView) return _thresholdInputs;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_thresholdInputs);
+}
+
+@override@JsonKey() final  TargetPreset basePreset;
+@override@JsonKey() final  bool hasUnsavedChanges;
 @override@JsonKey() final  bool saved;
 @override final  String? errorMessage;
 @override final  String? infoMessage;
@@ -255,18 +267,18 @@ _$TargetSettingsStateCopyWith<_TargetSettingsState> get copyWith => __$TargetSet
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TargetSettingsState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.isReclassifying, isReclassifying) || other.isReclassifying == isReclassifying)&&(identical(other.targets, targets) || other.targets == targets)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.unit, unit) || other.unit == unit)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.infoMessage, infoMessage) || other.infoMessage == infoMessage));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TargetSettingsState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.isReclassifying, isReclassifying) || other.isReclassifying == isReclassifying)&&(identical(other.targets, targets) || other.targets == targets)&&(identical(other.profile, profile) || other.profile == profile)&&(identical(other.unit, unit) || other.unit == unit)&&const DeepCollectionEquality().equals(other.thresholdInputs, _thresholdInputs)&&(identical(other.basePreset, basePreset) || other.basePreset == basePreset)&&(identical(other.hasUnsavedChanges, hasUnsavedChanges) || other.hasUnsavedChanges == hasUnsavedChanges)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.errorMessage, errorMessage) || other.errorMessage == errorMessage)&&(identical(other.infoMessage, infoMessage) || other.infoMessage == infoMessage));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,isLoading,isSaving,isReclassifying,targets,profile,unit,saved,errorMessage,infoMessage);
+    return Object.hash(runtimeType,isLoading,isSaving,isReclassifying,targets,profile,unit,const DeepCollectionEquality().hash(_thresholdInputs),basePreset,hasUnsavedChanges,saved,errorMessage,infoMessage);
 }
 
 @override
 String toString() {
-    return 'TargetSettingsState(isLoading: $isLoading, isSaving: $isSaving, isReclassifying: $isReclassifying, targets: $targets, profile: $profile, unit: $unit, saved: $saved, errorMessage: $errorMessage, infoMessage: $infoMessage)';
+    return 'TargetSettingsState(isLoading: $isLoading, isSaving: $isSaving, isReclassifying: $isReclassifying, targets: $targets, profile: $profile, unit: $unit, thresholdInputs: $thresholdInputs, basePreset: $basePreset, hasUnsavedChanges: $hasUnsavedChanges, saved: $saved, errorMessage: $errorMessage, infoMessage: $infoMessage)';
 }
 
 
@@ -277,7 +289,7 @@ abstract mixin class _$TargetSettingsStateCopyWith<$Res> implements $TargetSetti
   factory _$TargetSettingsStateCopyWith(_TargetSettingsState value, $Res Function(_TargetSettingsState) _then) = __$TargetSettingsStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, bool isSaving, bool isReclassifying, TargetSet? targets, UserProfile? profile, GlucoseUnit unit, bool saved, String? errorMessage, String? infoMessage
+ bool isLoading, bool isSaving, bool isReclassifying, TargetSet? targets, UserProfile? profile, GlucoseUnit unit, Map<String, String> thresholdInputs, TargetPreset basePreset, bool hasUnsavedChanges, bool saved, String? errorMessage, String? infoMessage
 });
 
 
@@ -294,7 +306,7 @@ class __$TargetSettingsStateCopyWithImpl<$Res>
 
 /// Create a copy of TargetSettingsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? isSaving = null,Object? isReclassifying = null,Object? targets = freezed,Object? profile = freezed,Object? unit = null,Object? saved = null,Object? errorMessage = freezed,Object? infoMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? isSaving = null,Object? isReclassifying = null,Object? targets = freezed,Object? profile = freezed,Object? unit = null,Object? thresholdInputs = null,Object? basePreset = null,Object? hasUnsavedChanges = null,Object? saved = null,Object? errorMessage = freezed,Object? infoMessage = freezed,}) {
   return _then(_TargetSettingsState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isSaving: null == isSaving ? _self.isSaving : isSaving // ignore: cast_nullable_to_non_nullable
@@ -302,7 +314,10 @@ as bool,isReclassifying: null == isReclassifying ? _self.isReclassifying : isRec
 as bool,targets: freezed == targets ? _self.targets : targets // ignore: cast_nullable_to_non_nullable
 as TargetSet?,profile: freezed == profile ? _self.profile : profile // ignore: cast_nullable_to_non_nullable
 as UserProfile?,unit: null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
-as GlucoseUnit,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
+as GlucoseUnit,thresholdInputs: null == thresholdInputs ? _self._thresholdInputs : thresholdInputs // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,basePreset: null == basePreset ? _self.basePreset : basePreset // ignore: cast_nullable_to_non_nullable
+as TargetPreset,hasUnsavedChanges: null == hasUnsavedChanges ? _self.hasUnsavedChanges : hasUnsavedChanges // ignore: cast_nullable_to_non_nullable
+as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,errorMessage: freezed == errorMessage ? _self.errorMessage : errorMessage // ignore: cast_nullable_to_non_nullable
 as String?,infoMessage: freezed == infoMessage ? _self.infoMessage : infoMessage // ignore: cast_nullable_to_non_nullable
 as String?,

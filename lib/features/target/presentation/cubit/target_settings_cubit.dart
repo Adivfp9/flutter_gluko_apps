@@ -2,9 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/core/usecase/usecase.dart';
+import 'package:flutter_gluko_apps/core/utils/unit_converter.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/reclassify_readings.dart';
 import 'package:flutter_gluko_apps/features/profile/domain/usecases/get_profile.dart';
-import 'package:flutter_gluko_apps/features/profile/domain/usecases/save_profile.dart';
 import 'package:flutter_gluko_apps/features/target/domain/entities/target_set.dart';
 import 'package:flutter_gluko_apps/features/target/domain/usecases/get_targets.dart';
 import 'package:flutter_gluko_apps/features/target/domain/usecases/reset_targets.dart';
@@ -20,7 +20,6 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
     this._saveTargets,
     this._resetTargets,
     this._getProfile,
-    this._saveProfile,
     this._reclassifyReadings,
   ) : super(const TargetSettingsState());
 
@@ -28,7 +27,6 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
   final SaveTargets _saveTargets;
   final ResetTargets _resetTargets;
   final GetProfile _getProfile;
-  final SaveProfile _saveProfile;
   final ReclassifyReadings _reclassifyReadings;
 
   Future<void> initialize() async {
@@ -55,6 +53,14 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
         targets: targetsResult.getRight().toNullable(),
         profile: profile,
         unit: profile.unit,
+        thresholdInputs: _inputsFor(
+          targetsResult.getRight().toNullable()!,
+          profile.unit,
+        ),
+        basePreset: profile.preset == TargetPreset.custom
+            ? profile.diabetesType.defaultPreset
+            : profile.preset,
+        hasUnsavedChanges: false,
       ),
     );
   }
@@ -64,6 +70,9 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
     emit(
       state.copyWith(
         targets: TargetSet.fromPreset(preset),
+        thresholdInputs: _inputsFor(TargetSet.fromPreset(preset), state.unit),
+        basePreset: preset,
+        hasUnsavedChanges: true,
         saved: false,
         errorMessage: null,
         infoMessage: null,
@@ -72,17 +81,24 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
   }
 
   void updateThreshold(ReadingType type, TargetBoundary boundary, int value) {
-    final targets = state.targets;
-    if (targets == null) return;
-    final current = targets.forType(type);
-    final updated = switch (boundary) {
-      TargetBoundary.lowMax => current.copyWith(lowMax: value),
-      TargetBoundary.normalMax => current.copyWith(normalMax: value),
-      TargetBoundary.warningMax => current.copyWith(warningMax: value),
-    };
+    updateThresholdInput(
+      type,
+      boundary,
+      UnitConverter.formatValue(value, state.unit),
+    );
+  }
+
+  void updateThresholdInput(
+    ReadingType type,
+    TargetBoundary boundary,
+    String raw,
+  ) {
+    final inputs = {...state.thresholdInputs};
+    inputs[targetInputKey(type, boundary)] = raw;
     emit(
       state.copyWith(
-        targets: targets.replace(type, updated),
+        thresholdInputs: inputs,
+        hasUnsavedChanges: true,
         saved: false,
         errorMessage: null,
         infoMessage: null,
@@ -90,17 +106,24 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
     );
   }
 
-  void setUnit(GlucoseUnit unit) => emit(
-    state.copyWith(
-      unit: unit,
-      saved: false,
-      errorMessage: null,
-      infoMessage: null,
-    ),
-  );
+  void setUnit(GlucoseUnit unit) {
+    final targets = state.parsedTargets ?? state.targets;
+    if (targets == null) return;
+    emit(
+      state.copyWith(
+        unit: unit,
+        thresholdInputs: _inputsFor(targets, unit),
+        hasUnsavedChanges: true,
+        saved: false,
+        errorMessage: null,
+        infoMessage: null,
+      ),
+    );
+  }
 
   Future<void> save() async {
-    final targets = state.targets;
+    if (state.isBusy) return;
+    final targets = state.parsedTargets;
     final profile = state.profile;
     if (targets == null || profile == null) return;
     if (!targets.isValid) {
@@ -122,7 +145,7 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
         infoMessage: null,
       ),
     );
-    final targetResult = await _saveTargets(targets);
+    final targetResult = await _saveTargets.withUnit(targets, state.unit);
     final targetFailure = targetResult.getLeft().toNullable();
     if (targetFailure != null) return _saveFailed(targetFailure);
 
@@ -130,23 +153,22 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
       unit: state.unit,
       preset: targets.preset,
     );
-    final profileResult = await _saveProfile(updatedProfile);
-    final profileFailure = profileResult.getLeft().toNullable();
-    if (profileFailure != null) return _saveFailed(profileFailure);
-
     emit(
       state.copyWith(
         isSaving: false,
         saved: true,
+        targets: targets,
         profile: updatedProfile,
+        hasUnsavedChanges: false,
         infoMessage: 'Target dan satuan berhasil disimpan.',
       ),
     );
   }
 
   Future<void> reset() async {
+    if (state.isBusy) return;
     final preset = state.selectedPreset == TargetPreset.custom
-        ? TargetPreset.general
+        ? state.basePreset
         : state.selectedPreset;
     emit(state.copyWith(isSaving: true, errorMessage: null, saved: false));
     final result = await _resetTargets(preset);
@@ -158,6 +180,9 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
           state.copyWith(
             isSaving: false,
             targets: targets,
+            thresholdInputs: _inputsFor(targets, state.unit),
+            basePreset: preset,
+            hasUnsavedChanges: false,
             saved: true,
             infoMessage: 'Target dikembalikan ke preset ${preset.label}.',
           ),
@@ -166,6 +191,15 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
   }
 
   Future<void> reclassify() async {
+    if (state.isBusy) return;
+    if (state.hasUnsavedChanges) {
+      emit(
+        state.copyWith(
+          errorMessage: 'Simpan target terlebih dahulu sebelum hitung ulang.',
+        ),
+      );
+      return;
+    }
     final targets = state.targets;
     if (targets == null || !targets.isValid) return;
     emit(
@@ -201,4 +235,19 @@ class TargetSettingsCubit extends Cubit<TargetSettingsState> {
       errorMessage: failure.message,
     ),
   );
+
+  Map<String, String> _inputsFor(TargetSet targets, GlucoseUnit unit) => {
+    for (final type in ReadingType.values) ...{
+      targetInputKey(type, TargetBoundary.lowMax): UnitConverter.formatValue(
+        targets.forType(type).lowMax,
+        unit,
+      ),
+      targetInputKey(type, TargetBoundary.normalMax): UnitConverter.formatValue(
+        targets.forType(type).normalMax,
+        unit,
+      ),
+      targetInputKey(type, TargetBoundary.warningMax):
+          UnitConverter.formatValue(targets.forType(type).warningMax, unit),
+    },
+  };
 }

@@ -6,7 +6,6 @@ import 'package:flutter_gluko_apps/core/di/injection.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/theme/app_palette.dart';
 import 'package:flutter_gluko_apps/core/theme/app_spacing.dart';
-import 'package:flutter_gluko_apps/core/utils/unit_converter.dart';
 import 'package:flutter_gluko_apps/features/target/presentation/cubit/target_settings_cubit.dart';
 import 'package:flutter_gluko_apps/features/target/presentation/cubit/target_settings_state.dart';
 
@@ -90,17 +89,33 @@ class _TargetEditor extends StatelessWidget {
           AppSpacing.screenGutter,
           AppSpacing.md,
         ),
-        child: FilledButton(
-          onPressed: state.canSave ? cubit.save : null,
-          child: state.isSaving
-              ? const SizedBox.square(
-                  dimension: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Colors.white,
-                  ),
-                )
-              : const Text('Simpan target'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (state.validationMessage case final message?) ...[
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: palette.high.foreground),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+            ],
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: state.canSave ? cubit.save : null,
+                child: state.isSaving
+                    ? const SizedBox.square(
+                        dimension: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text('Simpan target'),
+              ),
+            ),
+          ],
         ),
       ),
       body: ListView(
@@ -163,13 +178,13 @@ class _TargetEditor extends StatelessWidget {
             const SizedBox(height: AppSpacing.md),
           ],
           OutlinedButton.icon(
-            onPressed: state.isSaving ? null : cubit.reset,
+            onPressed: state.isBusy ? null : cubit.reset,
             icon: const Icon(Icons.restart_alt),
             label: const Text('Kembalikan ke default'),
           ),
           const SizedBox(height: AppSpacing.sm),
           TextButton.icon(
-            onPressed: state.isReclassifying ? null : cubit.reclassify,
+            onPressed: state.isBusy ? null : cubit.reclassify,
             icon: state.isReclassifying
                 ? const SizedBox.square(
                     dimension: 18,
@@ -201,13 +216,8 @@ class _TargetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
     final cubit = context.read<TargetSettingsCubit>();
-    final thresholds = state.targets!.forType(type);
-
-    String display(int value) => UnitConverter.formatValue(value, state.unit);
-    void update(TargetBoundary boundary, String raw) {
-      final value = UnitConverter.parseToMgDl(raw, state.unit);
-      if (value != null) cubit.updateThreshold(type, boundary, value);
-    }
+    final thresholds =
+        state.parsedTargets?.forType(type) ?? state.targets!.forType(type);
 
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
@@ -271,9 +281,13 @@ class _TargetCard extends StatelessWidget {
                 child: _ThresholdField(
                   key: Key('target-${type.dbValue}-low'),
                   label: 'Rendah di bawah',
-                  value: display(thresholds.lowMax),
+                  value: state.inputFor(type, TargetBoundary.lowMax),
                   unit: state.unit,
-                  onChanged: (raw) => update(TargetBoundary.lowMax, raw),
+                  onChanged: (raw) => cubit.updateThresholdInput(
+                    type,
+                    TargetBoundary.lowMax,
+                    raw,
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -281,9 +295,13 @@ class _TargetCard extends StatelessWidget {
                 child: _ThresholdField(
                   key: Key('target-${type.dbValue}-normal'),
                   label: 'Normal hingga',
-                  value: display(thresholds.normalMax),
+                  value: state.inputFor(type, TargetBoundary.normalMax),
                   unit: state.unit,
-                  onChanged: (raw) => update(TargetBoundary.normalMax, raw),
+                  onChanged: (raw) => cubit.updateThresholdInput(
+                    type,
+                    TargetBoundary.normalMax,
+                    raw,
+                  ),
                 ),
               ),
               const SizedBox(width: AppSpacing.sm),
@@ -291,9 +309,13 @@ class _TargetCard extends StatelessWidget {
                 child: _ThresholdField(
                   key: Key('target-${type.dbValue}-warning'),
                   label: 'Waspada hingga',
-                  value: display(thresholds.warningMax),
+                  value: state.inputFor(type, TargetBoundary.warningMax),
                   unit: state.unit,
-                  onChanged: (raw) => update(TargetBoundary.warningMax, raw),
+                  onChanged: (raw) => cubit.updateThresholdInput(
+                    type,
+                    TargetBoundary.warningMax,
+                    raw,
+                  ),
                 ),
               ),
             ],

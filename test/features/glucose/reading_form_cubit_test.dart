@@ -116,6 +116,42 @@ void main() {
   );
 
   blocTest<ReadingFormCubit, ReadingFormState>(
+    'menginisialisasi 2JPP dengan dua jam setelah makan',
+    build: createCubit,
+    act: (cubit) => cubit.initialize(initialType: ReadingType.postprandial2h),
+    verify: (cubit) => expect(cubit.state.hoursAfterMeal, 2),
+  );
+
+  blocTest<ReadingFormCubit, ReadingFormState>(
+    'jam setelah makan hanya dipertahankan saat konteksnya relevan',
+    build: createCubit,
+    act: (cubit) async {
+      await cubit.initialize(initialType: ReadingType.random);
+      cubit
+        ..setMealContext(MealContext.afterMeal)
+        ..setHoursAfterMeal(1.5)
+        ..setMealContext(MealContext.bedtime);
+    },
+    verify: (cubit) {
+      expect(cubit.state.mealContext, MealContext.bedtime);
+      expect(cubit.state.hoursAfterMeal, isNull);
+    },
+  );
+
+  blocTest<ReadingFormCubit, ReadingFormState>(
+    'menampilkan alasan nilai tidak dapat disimpan saat masih invalid',
+    build: createCubit,
+    act: (cubit) async {
+      await cubit.initialize(initialType: ReadingType.fasting);
+      cubit.setValue('10');
+    },
+    verify: (cubit) {
+      expect(cubit.state.canSubmit, isFalse);
+      expect(cubit.state.validationMessage, contains('20 dan 600'));
+    },
+  );
+
+  blocTest<ReadingFormCubit, ReadingFormState>(
     'menyimpan nilai beserta gejala dan catatan',
     build: createCubit,
     act: (cubit) async {
@@ -130,6 +166,7 @@ void main() {
     verify: (cubit) {
       expect(cubit.state.savedReading?.valueMgDl, 150);
       expect(cubit.state.savedReading?.status, GlucoseStatus.warning);
+      expect(cubit.state.savedReading?.hoursAfterMeal, 2);
       expect(cubit.state.savedReading?.symptoms, [Symptom.thirsty]);
       expect(cubit.state.errorMessage, isNull);
     },

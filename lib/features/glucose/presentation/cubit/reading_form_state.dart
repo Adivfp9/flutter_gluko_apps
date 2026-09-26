@@ -41,4 +41,18 @@ abstract class ReadingFormState with _$ReadingFormState {
       UnitConverter.isInValidRange(valueMgDl!) &&
       (type != ReadingType.fasting || fastingConfirmed) &&
       note.trim().length <= 500;
+
+  String? get validationMessage {
+    if (rawValue.isNotEmpty && valueMgDl == null) {
+      return 'Masukkan angka gula darah yang valid.';
+    }
+    if (valueMgDl != null && !UnitConverter.isInValidRange(valueMgDl!)) {
+      return 'Nilai gula darah harus antara 20 dan 600 mg/dL.';
+    }
+    if (type == ReadingType.fasting && !fastingConfirmed) {
+      return 'Belum puasa 8 jam? Sebaiknya pilih tipe Sewaktu.';
+    }
+    if (note.trim().length > 500) return 'Catatan maksimal 500 karakter.';
+    return null;
+  }
 }

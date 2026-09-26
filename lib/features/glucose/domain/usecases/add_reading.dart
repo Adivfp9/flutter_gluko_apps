@@ -113,7 +113,11 @@ class AddReading implements UseCase<GlucoseReading, AddReadingParams> {
           : params.hoursAfterMeal,
       symptoms: List.unmodifiable(params.symptoms.toSet()),
       note: _normalizedNote(params.note),
-      createdAt: existing?.createdAt ?? timestamp,
+      createdAt:
+          existing != null &&
+              params.duplicateAction == DuplicateFastingAction.replace
+          ? existing.createdAt
+          : timestamp,
       updatedAt: timestamp,
     );
 

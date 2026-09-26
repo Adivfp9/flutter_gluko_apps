@@ -150,10 +150,17 @@ void main() {
   });
 
   test('resolusi saveAsRandom menyimpan pembacaan kedua sebagai GDS', () async {
-    await addReading(validParams());
+    final first = unwrap(await addReading(validParams()));
+    final later = now.add(const Duration(minutes: 5));
+    final addLater = AddReading.withClock(
+      repository,
+      targets,
+      const ClassifyReading(),
+      () => later,
+    );
 
     final second = unwrap(
-      await addReading(
+      await addLater(
         validParams(
           valueMgDl: 150,
           duplicateAction: DuplicateFastingAction.saveAsRandom,
@@ -163,6 +170,8 @@ void main() {
 
     expect(second.type, ReadingType.random);
     expect(second.status, GlucoseStatus.warning);
+    expect(second.createdAt, later.toLocal());
+    expect(second.createdAt, isNot(first.createdAt));
     expect(await db.glucoseDao.countActive(), 2);
   });
 }

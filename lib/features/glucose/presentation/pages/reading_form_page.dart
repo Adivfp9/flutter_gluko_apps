@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
+import 'package:flutter_gluko_apps/core/router/app_router.dart';
 import 'package:flutter_gluko_apps/core/theme/app_palette.dart';
 import 'package:flutter_gluko_apps/core/theme/app_spacing.dart';
 import 'package:flutter_gluko_apps/core/utils/unit_converter.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_gluko_apps/features/glucose/domain/entities/glucose_read
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/add_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_cubit.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_state.dart';
+import 'package:go_router/go_router.dart';
 
 class ReadingFormPage extends StatelessWidget {
   const new({this.initialType, super.key});
@@ -60,7 +62,9 @@ class _ReadingFormViewState extends State<ReadingFormView> {
           );
         }
         final saved = state.savedReading;
-        if (saved != null) return _SavedReadingView(reading: saved);
+        if (saved != null) {
+          return _SavedReadingView(reading: saved, unit: state.unit);
+        }
         return _ReadingForm(state: state);
       },
     );
@@ -77,7 +81,8 @@ class _ReadingFormViewState extends State<ReadingFormView> {
       builder: (dialogContext) => AlertDialog(
         title: const Text('GDP hari ini sudah ada'),
         content: Text(
-          'Catatan sebelumnya ${duplicate.existingValueMgDl} mg/dL. '
+          'Catatan sebelumnya '
+          '${UnitConverter.formatWithUnit(duplicate.existingValueMgDl, state.unit)}. '
           'Pilih cara menyimpan nilai baru.',
         ),
         actions: [
@@ -128,17 +133,34 @@ class _ReadingForm extends StatelessWidget {
           AppSpacing.screenGutter,
           AppSpacing.md,
         ),
-        child: FilledButton(
-          onPressed: state.canSubmit ? cubit.submit : null,
-          child: state.isSubmitting
-              ? const SizedBox.square(
-                  dimension: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Colors.white,
-                  ),
-                )
-              : const Text('Simpan'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (state.validationMessage ?? state.errorMessage
+                case final message?) ...[
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: palette.high.foreground),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+            ],
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: state.canSubmit ? cubit.submit : null,
+                child: state.isSubmitting
+                    ? const SizedBox.square(
+                        dimension: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Text('Simpan'),
+              ),
+            ),
+          ],
         ),
       ),
       body: SafeArea(
@@ -174,7 +196,7 @@ class _ReadingForm extends StatelessWidget {
                       ),
                       IconButton(
                         tooltip: 'Tutup',
-                        onPressed: () => Navigator.maybePop(context),
+                        onPressed: () => _closeForm(context),
                         icon: const Icon(Icons.close),
                       ),
                     ],
@@ -215,14 +237,6 @@ class _ReadingForm extends StatelessWidget {
                     ),
                     onChanged: cubit.setNote,
                   ),
-                  if (state.errorMessage case final message?) ...[
-                    const SizedBox(height: AppSpacing.md),
-                    Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: palette.high.foreground),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -365,7 +379,9 @@ class _MeasurementDetails extends StatelessWidget {
                 ),
               ),
             ),
-          if (state.type == ReadingType.postprandial2h)
+          if (state.type == ReadingType.postprandial2h ||
+              (state.type == ReadingType.random &&
+                  state.mealContext == MealContext.afterMeal))
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md,
@@ -470,9 +486,10 @@ class _Keypad extends StatelessWidget {
 }
 
 class _SavedReadingView extends StatelessWidget {
-  const new({required this.reading});
+  const new({required this.reading, required this.unit});
 
   final GlucoseReading reading;
+  final GlucoseUnit unit;
 
   @override
   Widget build(BuildContext context) {
@@ -494,7 +511,7 @@ class _SavedReadingView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
-                '${reading.valueMgDl} mg/dL',
+                UnitConverter.formatWithUnit(reading.valueMgDl, unit),
                 style: Theme.of(context).textTheme.displayMedium,
               ),
               const SizedBox(height: AppSpacing.sm),
@@ -509,7 +526,7 @@ class _SavedReadingView extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: () => Navigator.maybePop(context),
+                  onPressed: () => context.goNamed(AppRoute.dashboard),
                   child: const Text('Selesai'),
                 ),
               ),
@@ -545,3 +562,11 @@ String _statusMessage(GlucoseStatus status) => switch (status) {
   GlucoseStatus.low =>
     'Di bawah target. Segera konsumsi gula cepat serap bila ada gejala.',
 };
+
+void _closeForm(BuildContext context) {
+  if (context.canPop()) {
+    context.pop();
+  } else {
+    context.goNamed(AppRoute.dashboard);
+  }
+}

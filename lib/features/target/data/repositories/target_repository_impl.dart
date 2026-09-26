@@ -4,6 +4,7 @@ import 'package:flutter_gluko_apps/core/domain/target_presets.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/database/app_database.dart';
 import 'package:flutter_gluko_apps/database/daos/target_dao.dart';
+import 'package:flutter_gluko_apps/features/profile/domain/entities/user_profile.dart';
 import 'package:flutter_gluko_apps/features/target/domain/entities/target_set.dart';
 import 'package:flutter_gluko_apps/features/target/domain/repositories/target_repository.dart';
 import 'package:fpdart/fpdart.dart';
@@ -38,23 +39,60 @@ class TargetRepositoryImpl implements TargetRepository {
     }
 
     try {
-      final now = DateTime.now().millisecondsSinceEpoch;
-      await _dao.upsertAll([
-        for (final type in ReadingType.values)
-          TargetRangesTableCompanion.insert(
-            readingType: type.dbValue,
-            lowMax: targets.forType(type).lowMax,
-            normalMax: targets.forType(type).normalMax,
-            warningMax: targets.forType(type).warningMax,
-            criticalLow: Value(targets.forType(type).criticalLow),
-            criticalHigh: Value(targets.forType(type).criticalHigh),
-            updatedAt: now,
-          ),
-      ]);
+      await _dao.upsertAll(_targetRows(targets));
       return const Right(unit);
     } on Object catch (e) {
       return Left(DatabaseFailure('Gagal menyimpan target: $e'));
     }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> saveTargetsAndProfile(
+    TargetSet targets,
+    UserProfile profile,
+  ) async {
+    if (!targets.isValid) {
+      return const Left(
+        ValidationFailure(
+          'Ambang harus naik berurutan: rendah < normal < waspada.',
+        ),
+      );
+    }
+    try {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      await _dao.upsertAllWithProfile(
+        _targetRows(targets, now: now),
+        UserProfileTableCompanion.insert(
+          name: Value(profile.name),
+          birthYear: Value(profile.birthYear),
+          diabetesType: Value(profile.diabetesType.dbValue),
+          unit: Value(profile.unit.dbValue),
+          preset: Value(profile.preset.dbValue),
+          onboardingDone: Value(profile.onboardingDone),
+          createdAt: profile.createdAt?.millisecondsSinceEpoch ?? now,
+          updatedAt: now,
+        ),
+      );
+      return const Right(unit);
+    } on Object catch (e) {
+      return Left(DatabaseFailure('Gagal menyimpan target dan satuan: $e'));
+    }
+  }
+
+  List<TargetRangesTableCompanion> _targetRows(TargetSet targets, {int? now}) {
+    final timestamp = now ?? DateTime.now().millisecondsSinceEpoch;
+    return [
+      for (final type in ReadingType.values)
+        TargetRangesTableCompanion.insert(
+          readingType: type.dbValue,
+          lowMax: targets.forType(type).lowMax,
+          normalMax: targets.forType(type).normalMax,
+          warningMax: targets.forType(type).warningMax,
+          criticalLow: Value(targets.forType(type).criticalLow),
+          criticalHigh: Value(targets.forType(type).criticalHigh),
+          updatedAt: timestamp,
+        ),
+    ];
   }
 
   /// Baris yang hilang diisi preset Umum, sehingga klasifikasi tidak pernah
