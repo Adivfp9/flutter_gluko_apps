@@ -60,7 +60,7 @@ abstract final class UnitConverter {
     return switch (unit) {
       GlucoseUnit.mgDl => int.tryParse(cleaned),
       GlucoseUnit.mmolL => switch (double.tryParse(cleaned)) {
-        final value? => mmolLToMgDl(value),
+        final value? when value.isFinite => mmolLToMgDl(value),
         _ => null,
       },
     };

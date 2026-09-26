@@ -19,6 +19,12 @@ import 'package:flutter_gluko_apps/database/daos/profile_dao.dart' as _i598;
 import 'package:flutter_gluko_apps/database/daos/reminder_dao.dart' as _i216;
 import 'package:flutter_gluko_apps/database/daos/settings_dao.dart' as _i851;
 import 'package:flutter_gluko_apps/database/daos/target_dao.dart' as _i385;
+import 'package:flutter_gluko_apps/features/glucose/data/repositories/glucose_repository_impl.dart'
+    as _i27;
+import 'package:flutter_gluko_apps/features/glucose/domain/repositories/glucose_repository.dart'
+    as _i848;
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/add_reading.dart'
+    as _i104;
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/classify_reading.dart'
     as _i725;
 import 'package:flutter_gluko_apps/features/onboarding/presentation/cubit/onboarding_cubit.dart'
@@ -30,7 +36,7 @@ import 'package:flutter_gluko_apps/features/profile/domain/repositories/profile_
 import 'package:flutter_gluko_apps/features/profile/domain/usecases/complete_onboarding.dart'
     as _i93;
 import 'package:flutter_gluko_apps/features/profile/domain/usecases/get_profile.dart'
-    as _i848;
+    as _i849;
 import 'package:flutter_gluko_apps/features/profile/domain/usecases/save_profile.dart'
     as _i550;
 import 'package:flutter_gluko_apps/features/reminder/data/repositories/reminder_repository_impl.dart'
@@ -89,6 +95,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i344.ReminderRepository>(
       () => _i212.ReminderRepositoryImpl(gh<_i216.ReminderDao>()),
     );
+    gh.lazySingleton<_i848.GlucoseRepository>(
+      () => _i27.GlucoseRepositoryImpl(gh<_i305.GlucoseDao>()),
+    );
     gh.lazySingleton<_i634.TargetRepository>(
       () => _i224.TargetRepositoryImpl(gh<_i385.TargetDao>()),
     );
@@ -114,11 +123,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i534.ResetTargets>(
       () => _i534.ResetTargets(gh<_i521.SaveTargets>()),
     );
-    gh.factory<_i848.GetProfile>(
-      () => _i848.GetProfile(gh<_i525.ProfileRepository>()),
+    gh.factory<_i849.GetProfile>(
+      () => _i849.GetProfile(gh<_i525.ProfileRepository>()),
     );
     gh.factory<_i550.SaveProfile>(
       () => _i550.SaveProfile(gh<_i525.ProfileRepository>()),
+    );
+    gh.factory<_i104.AddReading>(
+      () => _i104.AddReading(
+        gh<_i848.GlucoseRepository>(),
+        gh<_i634.TargetRepository>(),
+        gh<_i725.ClassifyReading>(),
+      ),
     );
     gh.factory<_i93.CompleteOnboarding>(
       () => _i93.CompleteOnboarding(
