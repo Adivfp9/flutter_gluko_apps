@@ -25,12 +25,20 @@ import 'package:flutter_gluko_apps/features/glucose/domain/repositories/glucose_
     as _i848;
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/add_reading.dart'
     as _i104;
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/build_dashboard_summary.dart'
+    as _i239;
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/classify_reading.dart'
     as _i725;
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/delete_reading.dart'
+    as _i1073;
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/find_fasting_on.dart'
     as _i360;
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/reclassify_readings.dart'
     as _i146;
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/watch_dashboard.dart'
+    as _i39;
+import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/dashboard_cubit.dart'
+    as _i94;
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_cubit.dart'
     as _i89;
 import 'package:flutter_gluko_apps/features/onboarding/presentation/cubit/onboarding_cubit.dart'
@@ -75,6 +83,9 @@ extension GetItInjectableX on _i174.GetIt {
   }) {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final databaseModule = _$DatabaseModule();
+    gh.factory<_i239.BuildDashboardSummary>(
+      () => const _i239.BuildDashboardSummary(),
+    );
     gh.factory<_i725.ClassifyReading>(() => const _i725.ClassifyReading());
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => databaseModule.secureStorage,
@@ -115,11 +126,23 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i634.TargetRepository>(
       () => _i224.TargetRepositoryImpl(gh<_i385.TargetDao>()),
     );
+    gh.factory<_i1073.DeleteReading>(
+      () => _i1073.DeleteReading(gh<_i848.GlucoseRepository>()),
+    );
+    gh.factory<_i1073.RestoreReading>(
+      () => _i1073.RestoreReading(gh<_i848.GlucoseRepository>()),
+    );
     gh.factory<_i360.FindFastingOn>(
       () => _i360.FindFastingOn(gh<_i848.GlucoseRepository>()),
     );
     gh.lazySingleton<_i525.ProfileRepository>(
       () => _i155.ProfileRepositoryImpl(gh<_i598.ProfileDao>()),
+    );
+    gh.factory<_i39.WatchDashboard>(
+      () => _i39.WatchDashboard(
+        gh<_i848.GlucoseRepository>(),
+        gh<_i239.BuildDashboardSummary>(),
+      ),
     );
     gh.lazySingleton<_i391.AppStartup>(
       () => _i391.AppStartup(
@@ -151,6 +174,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i848.GlucoseRepository>(),
         gh<_i634.TargetRepository>(),
         gh<_i725.ClassifyReading>(),
+      ),
+    );
+    gh.factory<_i94.DashboardCubit>(
+      () => _i94.DashboardCubit(
+        gh<_i39.WatchDashboard>(),
+        gh<_i525.ProfileRepository>(),
       ),
     );
     gh.factory<_i539.TargetSettingsCubit>(

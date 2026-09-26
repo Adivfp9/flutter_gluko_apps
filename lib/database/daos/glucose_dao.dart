@@ -54,6 +54,20 @@ class DailyAverage {
   final double average;
 }
 
+/// Bahan mentah beranda, hasil satu kali pembacaan bersama.
+class DashboardRaw {
+  const new({required this.window, required this.recent, this.lastRandom});
+
+  /// Pembacaan aktif dalam rentang tanggal yang diminta.
+  final List<GlucoseReadingRow> window;
+
+  /// Catatan terakhir, tanpa batas umur.
+  final List<ReadingWithSymptoms> recent;
+
+  /// Pembacaan sewaktu terakhir, juga tanpa batas umur.
+  final GlucoseReadingRow? lastRandom;
+}
+
 /// Status terburuk pada satu hari, untuk titik warna pada tampilan kalender
 /// (PRD F-05 AC4).
 class DailyWorstStatus {
@@ -331,6 +345,65 @@ class GlucoseDao extends DatabaseAccessor<AppDatabase> with _$GlucoseDaoMixin {
               ..orderBy([(t) => OrderingTerm(expression: t.measuredAt)]))
             .get();
     return await _attachSymptoms(rows);
+  }
+
+  /// Seluruh bahan beranda dalam **satu** langganan (PRD 7.4 langkah 5).
+  ///
+  /// Beranda butuh empat potong data dengan bentuk berbeda. Melanggankan empat
+  /// stream terpisah akan membuat kartu-kartunya ter-update pada frame yang
+  /// berlainan dan sempat tampil tidak konsisten. Di sini yang dilanggan hanya
+  /// perubahan tabel, lalu seluruh potongan dibaca ulang bersama-sama.
+  Stream<DashboardRaw> watchDashboard({
+    required String fromLocalDate,
+    required String toLocalDate,
+    int recentLimit = 5,
+  }) async* {
+    Future<DashboardRaw> load() async {
+      final window = await readingsBetween(
+        fromLocalDate: fromLocalDate,
+        toLocalDate: toLocalDate,
+      );
+      final recent =
+          await (select(glucoseReadingsTable)
+                ..where((t) => t.deletedAt.isNull())
+                ..orderBy([
+                  (t) => OrderingTerm(
+                    expression: t.measuredAt,
+                    mode: OrderingMode.desc,
+                  ),
+                ])
+                ..limit(recentLimit))
+              .get();
+      final lastRandom =
+          await (select(glucoseReadingsTable)
+                ..where(
+                  (t) =>
+                      t.readingType.equals(ReadingType.random.dbValue) &
+                      t.deletedAt.isNull(),
+                )
+                ..orderBy([
+                  (t) => OrderingTerm(
+                    expression: t.measuredAt,
+                    mode: OrderingMode.desc,
+                  ),
+                ])
+                ..limit(1))
+              .getSingleOrNull();
+
+      return DashboardRaw(
+        window: window,
+        recent: await _attachSymptoms(recent),
+        lastRandom: lastRandom,
+      );
+    }
+
+    yield await load();
+
+    await for (final _ in attachedDatabase.tableUpdates(
+      TableUpdateQuery.onTable(glucoseReadingsTable),
+    )) {
+      yield await load();
+    }
   }
 
   // ----------------------------------------------------------------- tulis
