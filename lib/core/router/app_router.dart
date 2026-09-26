@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/router/app_shell.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/dashboard_page.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/history_page.dart';
+import 'package:flutter_gluko_apps/features/glucose/presentation/pages/reading_form_page.dart';
 import 'package:flutter_gluko_apps/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:flutter_gluko_apps/features/settings/presentation/pages/settings_page.dart';
 import 'package:flutter_gluko_apps/features/startup/presentation/pages/splash_page.dart';
+import 'package:flutter_gluko_apps/features/target/presentation/pages/target_settings_page.dart';
 import 'package:flutter_gluko_apps/features/trend/presentation/pages/trend_page.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,6 +24,7 @@ abstract final class AppRoute {
   static const String record = 'record';
   static const String splash = 'splash';
   static const String onboarding = 'onboarding';
+  static const String target = 'target';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -41,6 +45,19 @@ GoRouter createRouter({String initialLocation = '/'}) {
         path: '/onboarding',
         name: AppRoute.onboarding,
         builder: (context, state) => const OnboardingPage(),
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        path: '/catat',
+        name: AppRoute.record,
+        builder: (context, state) {
+          final rawType = state.uri.queryParameters['type'];
+          ReadingType? initialType;
+          for (final type in ReadingType.values) {
+            if (type.dbValue == rawType) initialType = type;
+          }
+          return ReadingFormPage(initialType: initialType);
+        },
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -79,6 +96,13 @@ GoRouter createRouter({String initialLocation = '/'}) {
                 path: '/pengaturan',
                 name: AppRoute.settings,
                 builder: (context, state) => const SettingsPage(),
+                routes: [
+                  GoRoute(
+                    path: 'target',
+                    name: AppRoute.target,
+                    builder: (context, state) => const TargetSettingsPage(),
+                  ),
+                ],
               ),
             ],
           ),

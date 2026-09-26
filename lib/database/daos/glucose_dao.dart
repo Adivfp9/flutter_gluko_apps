@@ -324,6 +324,15 @@ class GlucoseDao extends DatabaseAccessor<AppDatabase> with _$GlucoseDaoMixin {
     return row.read<int>('c');
   }
 
+  Future<List<ReadingWithSymptoms>> allActive() async {
+    final rows =
+        await (select(glucoseReadingsTable)
+              ..where((t) => t.deletedAt.isNull())
+              ..orderBy([(t) => OrderingTerm(expression: t.measuredAt)]))
+            .get();
+    return await _attachSymptoms(rows);
+  }
+
   // ----------------------------------------------------------------- tulis
 
   /// Menyimpan pembacaan beserta gejalanya dalam satu transaksi.
@@ -378,6 +387,22 @@ class GlucoseDao extends DatabaseAccessor<AppDatabase> with _$GlucoseDaoMixin {
 
   Future<void> hardDelete(int id) =>
       (delete(glucoseReadingsTable)..where((t) => t.id.equals(id))).go();
+
+  Future<void> updateClassifications(
+    List<({int id, String status, bool isCritical, int updatedAt})> updates,
+  ) => transaction(() async {
+    for (final value in updates) {
+      await (update(
+        glucoseReadingsTable,
+      )..where((t) => t.id.equals(value.id))).write(
+        GlucoseReadingsTableCompanion(
+          status: Value(value.status),
+          isCritical: Value(value.isCritical),
+          updatedAt: Value(value.updatedAt),
+        ),
+      );
+    }
+  });
 
   // ---------------------------------------------------------------- privat
 

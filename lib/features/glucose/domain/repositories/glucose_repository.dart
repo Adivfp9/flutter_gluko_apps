@@ -10,4 +10,10 @@ abstract interface class GlucoseRepository {
   Future<Either<Failure, GlucoseReading>> add(GlucoseReading reading);
 
   Future<Either<Failure, GlucoseReading>> update(GlucoseReading reading);
+
+  Future<Either<Failure, List<GlucoseReading>>> getAllActive();
+
+  Future<Either<Failure, Unit>> updateClassifications(
+    List<GlucoseReading> readings,
+  );
 }

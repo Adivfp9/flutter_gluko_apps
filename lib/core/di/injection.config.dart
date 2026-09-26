@@ -27,6 +27,12 @@ import 'package:flutter_gluko_apps/features/glucose/domain/usecases/add_reading.
     as _i104;
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/classify_reading.dart'
     as _i725;
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/find_fasting_on.dart'
+    as _i360;
+import 'package:flutter_gluko_apps/features/glucose/domain/usecases/reclassify_readings.dart'
+    as _i146;
+import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/reading_form_cubit.dart'
+    as _i89;
 import 'package:flutter_gluko_apps/features/onboarding/presentation/cubit/onboarding_cubit.dart'
     as _i1062;
 import 'package:flutter_gluko_apps/features/profile/data/repositories/profile_repository_impl.dart'
@@ -55,6 +61,8 @@ import 'package:flutter_gluko_apps/features/target/domain/usecases/reset_targets
     as _i534;
 import 'package:flutter_gluko_apps/features/target/domain/usecases/save_targets.dart'
     as _i521;
+import 'package:flutter_gluko_apps/features/target/presentation/cubit/target_settings_cubit.dart'
+    as _i539;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -98,8 +106,17 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i848.GlucoseRepository>(
       () => _i27.GlucoseRepositoryImpl(gh<_i305.GlucoseDao>()),
     );
+    gh.factory<_i146.ReclassifyReadings>(
+      () => _i146.ReclassifyReadings(
+        gh<_i848.GlucoseRepository>(),
+        gh<_i725.ClassifyReading>(),
+      ),
+    );
     gh.lazySingleton<_i634.TargetRepository>(
       () => _i224.TargetRepositoryImpl(gh<_i385.TargetDao>()),
+    );
+    gh.factory<_i360.FindFastingOn>(
+      () => _i360.FindFastingOn(gh<_i848.GlucoseRepository>()),
     );
     gh.lazySingleton<_i525.ProfileRepository>(
       () => _i155.ProfileRepositoryImpl(gh<_i598.ProfileDao>()),
@@ -133,6 +150,25 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i104.AddReading(
         gh<_i848.GlucoseRepository>(),
         gh<_i634.TargetRepository>(),
+        gh<_i725.ClassifyReading>(),
+      ),
+    );
+    gh.factory<_i539.TargetSettingsCubit>(
+      () => _i539.TargetSettingsCubit(
+        gh<_i135.GetTargets>(),
+        gh<_i521.SaveTargets>(),
+        gh<_i534.ResetTargets>(),
+        gh<_i849.GetProfile>(),
+        gh<_i550.SaveProfile>(),
+        gh<_i146.ReclassifyReadings>(),
+      ),
+    );
+    gh.factory<_i89.ReadingFormCubit>(
+      () => _i89.ReadingFormCubit(
+        gh<_i104.AddReading>(),
+        gh<_i135.GetTargets>(),
+        gh<_i849.GetProfile>(),
+        gh<_i360.FindFastingOn>(),
         gh<_i725.ClassifyReading>(),
       ),
     );

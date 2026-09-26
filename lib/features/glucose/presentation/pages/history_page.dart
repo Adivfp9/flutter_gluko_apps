@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gluko_apps/core/router/app_router.dart';
 import 'package:flutter_gluko_apps/core/widgets/sprint_placeholder.dart';
+import 'package:go_router/go_router.dart';
 
 /// S-06 Riwayat (F-05).
 class HistoryPage extends StatelessWidget {
@@ -17,6 +19,18 @@ class HistoryPage extends StatelessWidget {
           icon: Icons.history_outlined,
         ),
       ),
+      floatingActionButton: _RecordButton(),
     );
   }
+}
+
+class _RecordButton extends StatelessWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context) => FloatingActionButton.extended(
+    onPressed: () => context.pushNamed(AppRoute.record),
+    icon: const Icon(Icons.add),
+    label: const Text('Catat'),
+  );
 }

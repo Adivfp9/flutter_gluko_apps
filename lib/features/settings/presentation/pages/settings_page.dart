@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gluko_apps/core/widgets/sprint_placeholder.dart';
+import 'package:flutter_gluko_apps/core/router/app_router.dart';
+import 'package:flutter_gluko_apps/core/theme/app_spacing.dart';
+import 'package:go_router/go_router.dart';
 
 /// S-09 Pengaturan.
 ///
@@ -11,16 +13,80 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: SafeArea(
-        child: SprintPlaceholder(
-          title: 'Pengaturan',
-          sprint:
-              'Profil, target, satuan, pengingat, keamanan, dan backup '
-              'diisi pada Sprint 2 dan 4.',
-          icon: Icons.tune_outlined,
+    return Scaffold(
+      appBar: AppBar(title: const Text('Pengaturan')),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.screenGutter,
+          vertical: AppSpacing.sm,
         ),
+        children: [
+          Text('Pemantauan', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: AppSpacing.sm),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.tune),
+              title: const Text('Target & satuan'),
+              subtitle: const Text(
+                'Atur rentang GDP, GDS, 2 Jam PP, serta mg/dL atau mmol/L.',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.pushNamed(AppRoute.target),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          Text('Akan hadir', style: Theme.of(context).textTheme.titleSmall),
+          const SizedBox(height: AppSpacing.sm),
+          const Card(
+            child: Column(
+              children: [
+                _UpcomingSetting(
+                  icon: Icons.notifications_outlined,
+                  title: 'Pengingat',
+                  subtitle: 'Jadwal cek gula darah · Sprint 4',
+                ),
+                Divider(height: 1),
+                _UpcomingSetting(
+                  icon: Icons.lock_outline,
+                  title: 'Keamanan',
+                  subtitle: 'PIN dan biometrik · Sprint 4',
+                ),
+                Divider(height: 1),
+                _UpcomingSetting(
+                  icon: Icons.backup_outlined,
+                  title: 'Backup & restore',
+                  subtitle: 'Cadangan terenkripsi · Sprint 4',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          const ListTile(
+            leading: Icon(Icons.info_outline),
+            title: Text('Tentang GlukoTrack'),
+            subtitle: Text(
+              'Alat pencatatan pribadi, bukan pengganti diagnosis atau '
+              'nasihat dokter.',
+            ),
+          ),
+        ],
       ),
     );
   }
+}
+
+class _UpcomingSetting extends StatelessWidget {
+  const new({required this.icon, required this.title, required this.subtitle});
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) => ListTile(
+    enabled: false,
+    leading: Icon(icon),
+    title: Text(title),
+    subtitle: Text(subtitle),
+  );
 }

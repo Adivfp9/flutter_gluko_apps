@@ -75,6 +75,37 @@ class GlucoseRepositoryImpl implements GlucoseRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, List<GlucoseReading>>> getAllActive() async {
+    try {
+      return Right([
+        for (final value in await _dao.allActive()) _toEntity(value),
+      ]);
+    } on Object catch (error) {
+      return Left(DatabaseFailure('Gagal membaca seluruh catatan: $error'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> updateClassifications(
+    List<GlucoseReading> readings,
+  ) async {
+    try {
+      await _dao.updateClassifications([
+        for (final reading in readings)
+          (
+            id: reading.id!,
+            status: reading.status.dbValue,
+            isCritical: reading.isCritical,
+            updatedAt: reading.updatedAt!.millisecondsSinceEpoch,
+          ),
+      ]);
+      return const Right(unit);
+    } on Object catch (error) {
+      return Left(DatabaseFailure('Gagal menghitung ulang status: $error'));
+    }
+  }
+
   GlucoseReadingsTableCompanion _toCompanion(GlucoseReading reading) {
     final now = DateTime.now().millisecondsSinceEpoch;
     return GlucoseReadingsTableCompanion.insert(
