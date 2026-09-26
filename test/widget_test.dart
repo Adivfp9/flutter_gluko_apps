@@ -1,30 +1,61 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
+import 'package:flutter_gluko_apps/app.dart';
+import 'package:flutter_gluko_apps/core/router/app_router.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_gluko_apps/main.dart';
+/// Test rangka navigasi.
+///
+/// Router dimulai langsung di `/beranda` supaya splash — yang menjalankan
+/// pemeriksaan database lewat dependency injection — tidak ikut terpanggil.
+/// Alur splash diuji terpisah pada test integrasi.
+Widget shellApp() =>
+    GlukoTrackApp(router: createRouter(initialLocation: '/beranda'));
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Rangka aplikasi', () {
+    testWidgets('membuka Beranda dan menampilkan 4 tab', (tester) async {
+      await tester.pumpWidget(shellApp());
+      await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      expect(find.byType(NavigationBar), findsOneWidget);
+      for (final label in ['Beranda', 'Riwayat', 'Tren', 'Setelan']) {
+        expect(
+          find.descendant(
+            of: find.byType(NavigationBar),
+            matching: find.text(label),
+          ),
+          findsOneWidget,
+          reason: 'Tab $label harus ada di navigasi bawah',
+        );
+      }
+      expect(find.textContaining('Kartu GDP/GDS'), findsOneWidget);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    testWidgets('berpindah tab mengganti isi layar', (tester) async {
+      await tester.pumpWidget(shellApp());
+      await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      await tester.tap(find.text('Tren'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('Grafik 7/14/30/90 hari'),
+        findsOneWidget,
+        reason: 'Tab Tren harus menampilkan isi layar Tren',
+      );
+    });
+
+    testWidgets('tema gelap memakai latar gelap', (tester) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+
+      await tester.pumpWidget(shellApp());
+      await tester.pumpAndSettle();
+
+      final theme = Theme.of(tester.element(find.byType(NavigationBar)));
+      expect(theme.brightness, Brightness.dark);
+      // PRD 6.2: background mode gelap #0B0D0F.
+      expect(theme.scaffoldBackgroundColor, const Color(0xFF0B0D0F));
+    });
   });
 }
