@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
@@ -24,7 +25,7 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
     this._getProfile,
     this._findFastingOn,
     this._classify,
-  ) : _now = DateTime.now,
+  ) : _now = (() => clock.now()),
       super(const ReadingFormState());
 
   new withClock(

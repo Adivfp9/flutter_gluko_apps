@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
@@ -285,7 +286,7 @@ class _DateGroup extends StatelessWidget {
     final palette = context.palette;
     final header = ReadingGrouper.headerLabel(
       group.localDate,
-      now: DateTime.now(),
+      now: clock.now(),
       formatDate: (d) => DateFormat('EEE, d MMM', 'id').format(d),
     );
 
@@ -412,7 +413,7 @@ class _CalendarView extends StatelessWidget {
     final cubit = context.read<HistoryCubit>();
     final palette = context.palette;
     final text = Theme.of(context).textTheme;
-    final month = state.calendarMonth ?? DateTime.now();
+    final month = state.calendarMonth ?? clock.now();
 
     final firstOfMonth = DateTime(month.year, month.month);
     final daysInMonth = DateTime(month.year, month.month + 1, 0).day;

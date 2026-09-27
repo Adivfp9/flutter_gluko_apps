@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
@@ -338,8 +339,8 @@ class _MeasurementDetails extends StatelessWidget {
     final current = state.measuredAt!;
     final date = await showDatePicker(
       context: context,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now(),
+      firstDate: clock.now().subtract(const Duration(days: 365)),
+      lastDate: clock.now(),
       initialDate: current,
     );
     if (date == null || !context.mounted) return;
@@ -517,7 +518,11 @@ class _Keypad extends StatelessWidget {
               ),
             ),
             onPressed: () => cubit.appendKey(key),
-            child: Text(key, style: Theme.of(context).textTheme.titleLarge),
+            // Glyph "⌫" tidak ada di Plus Jakarta Sans dan bergantung pada
+            // font cadangan perangkat; ikon selalu tampil dan berlabel.
+            child: key == '⌫'
+                ? const Icon(Icons.backspace_outlined, semanticLabel: 'Hapus')
+                : Text(key, style: Theme.of(context).textTheme.titleLarge),
           ),
       ],
     );

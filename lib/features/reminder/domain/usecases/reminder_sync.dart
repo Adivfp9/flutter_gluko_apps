@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart' as time;
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/utils/local_date.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/entities/glucose_reading.dart';
@@ -30,7 +31,7 @@ class ReminderSync {
 
   /// Diganti di test agar "hari ini" bisa dipatok.
   @visibleForTesting
-  DateTime Function() clock = DateTime.now;
+  DateTime Function() clock = () => time.clock.now();
 
   StreamSubscription<List<Reminder>>? _reminderSub;
   StreamSubscription<List<GlucoseReading>>? _todaySub;

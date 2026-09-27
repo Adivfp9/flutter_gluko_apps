@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/core/usecase/usecase.dart';
@@ -61,7 +62,7 @@ class UpdateReading implements UseCase<GlucoseReading, UpdateReadingParams> {
       );
     }
 
-    final now = DateTime.now();
+    final now = clock.now();
     if (params.measuredAt.isAfter(now)) {
       return const Left(
         ValidationFailure(

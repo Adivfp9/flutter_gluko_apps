@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
@@ -32,7 +33,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
   @override
   Future<Either<Failure, Unit>> saveProfile(UserProfile profile) async {
     try {
-      final now = DateTime.now().millisecondsSinceEpoch;
+      final now = clock.now().millisecondsSinceEpoch;
       await _dao.save(
         UserProfileTableCompanion.insert(
           name: Value(profile.name),

@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
@@ -199,7 +200,7 @@ class GlucoseRepositoryImpl implements GlucoseRepository {
   @override
   Future<Either<Failure, Unit>> softDelete(int id) async {
     try {
-      await _dao.softDelete(id, DateTime.now());
+      await _dao.softDelete(id, clock.now());
       return const Right(unit);
     } on Object catch (error) {
       return Left(DatabaseFailure('Gagal menghapus catatan: $error'));
@@ -224,7 +225,7 @@ class GlucoseRepositoryImpl implements GlucoseRepository {
   }
 
   GlucoseReadingsTableCompanion _toCompanion(GlucoseReading reading) {
-    final now = DateTime.now().millisecondsSinceEpoch;
+    final now = clock.now().millisecondsSinceEpoch;
     return GlucoseReadingsTableCompanion.insert(
       readingType: reading.type.dbValue,
       valueMgDl: reading.valueMgDl,

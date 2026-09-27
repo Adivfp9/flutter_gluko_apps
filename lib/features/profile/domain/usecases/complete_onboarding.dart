@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/core/usecase/usecase.dart';
@@ -71,7 +72,7 @@ class CompleteOnboarding
       unit: params.unit,
       preset: preset,
       onboardingDone: true,
-      createdAt: DateTime.now(),
+      createdAt: clock.now(),
     );
 
     final savedProfile = await _saveProfile(profile);

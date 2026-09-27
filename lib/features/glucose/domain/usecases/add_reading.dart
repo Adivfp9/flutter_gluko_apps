@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/core/usecase/usecase.dart';
@@ -40,7 +41,8 @@ class AddReadingParams {
 
 @injectable
 class AddReading implements UseCase<GlucoseReading, AddReadingParams> {
-  new(this._readings, this._targets, this._classify) : _now = DateTime.now;
+  new(this._readings, this._targets, this._classify)
+    : _now = (() => clock.now());
 
   new withClock(this._readings, this._targets, this._classify, this._now);
 

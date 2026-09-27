@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/entities/dashboard_summary.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/watch_dashboard.dart';
@@ -22,7 +23,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   DateTime? _subscribedFor;
 
   void start({DateTime? now}) {
-    final reference = now ?? DateTime.now();
+    final reference = now ?? clock.now();
     _subscribedFor = reference;
 
     unawaited(_summarySub?.cancel());
@@ -51,7 +52,7 @@ class DashboardCubit extends Cubit<DashboardState> {
   /// Jendela tanggal beranda ditetapkan saat berlangganan, jadi melewati
   /// tengah malam tanpa berlangganan ulang akan membuat "hari ini" tertinggal.
   void refreshIfDayChanged({DateTime? now}) {
-    final current = now ?? DateTime.now();
+    final current = now ?? clock.now();
     final previous = _subscribedFor;
     if (previous == null) return;
 

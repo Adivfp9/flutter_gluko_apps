@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_gluko_apps/database/app_database.dart';
 import 'package:flutter_gluko_apps/database/daos/settings_dao.dart';
 import 'package:flutter_gluko_apps/features/profile/domain/repositories/profile_repository.dart';
@@ -43,7 +44,7 @@ class AppStartup {
   Future<int> _purgeQuietly() async {
     try {
       final purged = await _database.purgeDeletedOlderThan();
-      await _settings.writeDateTime(SettingKeys.lastPurgeAt, DateTime.now());
+      await _settings.writeDateTime(SettingKeys.lastPurgeAt, clock.now());
       return purged;
     } on Object {
       // Database bermasalah akan tetap terlihat pada operasi berikutnya;

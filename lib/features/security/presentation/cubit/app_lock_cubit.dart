@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/features/security/domain/repositories/security_repository.dart';
 import 'package:flutter_gluko_apps/features/security/domain/services/security_services.dart';
@@ -83,7 +84,7 @@ class AppLockCubit extends Cubit<AppLockState> {
     if (state.isVerifying) return;
     emit(state.copyWith(isVerifying: true, errorMessage: null));
 
-    final at = now ?? DateTime.now();
+    final at = now ?? clock.now();
     final check = await _repository.verifyPin(pin, now: at);
     if (isClosed) return;
 

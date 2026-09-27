@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/utils/local_date.dart';
@@ -33,7 +34,7 @@ class TrendCubit extends Cubit<TrendState> {
   /// Waktu acuan tetap untuk test; `null` berarti memakai jam saat ini.
   DateTime? _fixedNow;
 
-  DateTime get _now => _fixedNow ?? DateTime.now();
+  DateTime get _now => _fixedNow ?? clock.now();
 
   void start({DateTime? now}) {
     _fixedNow = now;

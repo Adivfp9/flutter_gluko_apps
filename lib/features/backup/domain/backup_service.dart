@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:clock/clock.dart';
 import 'package:flutter_gluko_apps/core/utils/local_date.dart';
 import 'package:flutter_gluko_apps/database/app_database.dart';
 import 'package:flutter_gluko_apps/database/daos/settings_dao.dart';
@@ -74,7 +75,7 @@ class BackupService {
         'Passphrase minimal ${BackupCodec.minPassphraseLength} karakter.',
       );
     }
-    final at = now ?? DateTime.now();
+    final at = now ?? clock.now();
     final bytes = await _codec.encode(
       tables: await _snapshot.export(),
       schemaVersion: _database.schemaVersion,

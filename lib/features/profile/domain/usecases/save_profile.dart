@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/core/usecase/usecase.dart';
 import 'package:flutter_gluko_apps/features/profile/domain/entities/user_profile.dart';
@@ -17,7 +18,7 @@ class SaveProfile implements UseCase<Unit, UserProfile> {
   Future<Either<Failure, Unit>> call(UserProfile params) async {
     final year = params.birthYear;
     if (year != null) {
-      final thisYear = DateTime.now().year;
+      final thisYear = clock.now().year;
       if (year > thisYear || year < thisYear - 120) {
         return const Left(
           ValidationFailure(

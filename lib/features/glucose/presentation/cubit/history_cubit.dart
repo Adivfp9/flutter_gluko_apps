@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/utils/local_date.dart';
@@ -113,7 +114,7 @@ class HistoryCubit extends Cubit<HistoryState> {
     if (mode == state.viewMode) return;
     emit(state.copyWith(viewMode: mode));
     if (mode == HistoryViewMode.calendar) {
-      unawaited(loadCalendar(month: state.calendarMonth ?? DateTime.now()));
+      unawaited(loadCalendar(month: state.calendarMonth ?? clock.now()));
     }
   }
 

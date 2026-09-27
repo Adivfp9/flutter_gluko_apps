@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
 import 'package:flutter_gluko_apps/core/router/app_router.dart';
@@ -97,7 +98,7 @@ class _BackupTileState extends State<_BackupTile> {
       builder: (context, snapshot) {
         final last = snapshot.data;
         final loaded = snapshot.connectionState != ConnectionState.waiting;
-        final nudge = loaded && needsBackupNudge(last, DateTime.now());
+        final nudge = loaded && needsBackupNudge(last, clock.now());
         final scheme = Theme.of(context).colorScheme;
 
         return Card(

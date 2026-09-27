@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/router/app_router.dart';
@@ -53,9 +54,9 @@ class _GlukoTrackAppState extends State<GlukoTrackApp> {
       (location) => unawaited(_router.push(location)),
     );
     _lifecycle = AppLifecycleListener(
-      onPause: () => widget.appLock?.onBackgrounded(DateTime.now()),
+      onPause: () => widget.appLock?.onBackgrounded(clock.now()),
       onResume: () {
-        widget.appLock?.onForegrounded(DateTime.now());
+        widget.appLock?.onForegrounded(clock.now());
         widget.onResumed?.call();
       },
     );

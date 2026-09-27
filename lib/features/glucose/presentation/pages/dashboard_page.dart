@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
@@ -145,7 +146,7 @@ class _Greeting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
+    final now = clock.now();
     final text = Theme.of(context).textTheme;
     final date = DateFormat('EEEE, d MMMM y', 'id').format(now);
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:clock/clock.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/features/backup/domain/backup_codec.dart';
 import 'package:flutter_gluko_apps/features/backup/domain/backup_service.dart';
@@ -45,7 +46,7 @@ class BackupCubit extends Cubit<BackupState> {
           file.fileName,
         ),
       };
-      if (delivered) await _service.markBackedUp(now ?? DateTime.now());
+      if (delivered) await _service.markBackedUp(now ?? clock.now());
       if (isClosed) return;
       emit(
         state.copyWith(

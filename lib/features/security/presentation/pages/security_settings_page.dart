@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
@@ -239,7 +240,7 @@ class _VerifyPinPageState extends State<_VerifyPinPage> {
 
   Future<void> _onCompleted(String pin) async {
     setState(() => _checking = true);
-    final now = DateTime.now();
+    final now = clock.now();
     final check = await widget.repository.verifyPin(pin, now: now);
     if (!mounted) return;
     if (check.isSuccess) {

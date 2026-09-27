@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
@@ -216,7 +217,7 @@ class _LastBackupCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final last = lastBackupAt;
-    final nudge = needsBackupNudge(last, DateTime.now());
+    final nudge = needsBackupNudge(last, clock.now());
     final scheme = Theme.of(context).colorScheme;
 
     return Card(

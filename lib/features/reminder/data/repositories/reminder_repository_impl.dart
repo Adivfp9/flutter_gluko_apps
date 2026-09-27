@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
@@ -45,7 +46,7 @@ class ReminderRepositoryImpl implements ReminderRepository {
         timeOfMinutes: reminder.timeOfMinutes,
         daysMask: Value(reminder.daysMask),
         isActive: Value(reminder.isActive),
-        createdAt: DateTime.now().millisecondsSinceEpoch,
+        createdAt: clock.now().millisecondsSinceEpoch,
       );
 
       if (reminder.id == null) {
@@ -114,7 +115,7 @@ class ReminderRepositoryImpl implements ReminderRepository {
             readingType: Value(ReadingType.fasting.dbValue),
             timeOfMinutes: timeOfMinutes,
             isActive: Value(isActive),
-            createdAt: DateTime.now().millisecondsSinceEpoch,
+            createdAt: clock.now().millisecondsSinceEpoch,
           ),
         );
       } else {

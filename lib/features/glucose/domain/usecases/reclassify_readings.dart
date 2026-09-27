@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_gluko_apps/core/error/failures.dart';
 import 'package:flutter_gluko_apps/core/usecase/usecase.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/repositories/glucose_repository.dart';
@@ -19,7 +20,7 @@ class ReclassifyReadings implements UseCase<int, TargetSet> {
     final failure = result.getLeft().toNullable();
     if (failure != null) return Left(failure);
 
-    final now = DateTime.now();
+    final now = clock.now();
     final readings = result.getRight().toNullable()!;
     final updated = [
       for (final reading in readings)

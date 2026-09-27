@@ -8,6 +8,8 @@ environment:
   sdk: ^3.13.4
 
 dependencies:
+  # Sumber waktu yang bisa dipatok di test (golden, alur penuh).
+  clock: ^1.1.3
   crypto: ^3.0.7
   cryptography: ^2.9.0
   cupertino_icons: ^1.0.8

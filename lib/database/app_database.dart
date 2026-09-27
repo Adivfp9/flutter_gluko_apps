@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/domain/target_presets.dart';
@@ -86,7 +87,7 @@ class AppDatabase extends _$AppDatabase {
   /// Seed PRD 8.4: tiga baris `target_ranges` preset Umum dan satu pengingat
   /// puasa pukul 06.00.
   Future<void> _seedDefaults() async {
-    final now = DateTime.now().millisecondsSinceEpoch;
+    final now = clock.now().millisecondsSinceEpoch;
 
     await batch((b) {
       for (final type in ReadingType.values) {
@@ -139,7 +140,7 @@ class AppDatabase extends _$AppDatabase {
   ///
   /// Mengembalikan jumlah baris yang benar-benar dihapus.
   Future<int> purgeDeletedOlderThan({int retentionDays = 30, DateTime? now}) {
-    final cutoff = (now ?? DateTime.now())
+    final cutoff = (now ?? clock.now())
         .subtract(Duration(days: retentionDays))
         .millisecondsSinceEpoch;
 

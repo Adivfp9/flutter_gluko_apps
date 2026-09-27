@@ -14,5 +14,11 @@ Future<void> loadAppFonts() async {
     loader.addFont(rootBundle.load('assets/fonts/PlusJakartaSans-$weight.ttf'));
   }
   await loader.load();
+
+  // Ikon Material ikut dibundel ke aset test karena `uses-material-design`;
+  // tanpa ini ikon di golden tampil sebagai kotak.
+  final icons = FontLoader('MaterialIcons')
+    ..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'));
+  await icons.load();
   _loaded = true;
 }

@@ -106,6 +106,9 @@ abstract final class AppTypography {
         fontWeight: FontWeight.w700,
         color: secondary,
       ),
-    );
+      // Keluarga font dipasang di sini, bukan hanya lewat ThemeData.fontFamily:
+      // tema tombol (Text/Filled/FAB) memakai TextTheme ini langsung, dan tanpa
+      // fontFamily labelnya jatuh ke Roboto di Android (ketahuan dari golden).
+    ).apply(fontFamily: fontFamily);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/domain/target_presets.dart';
@@ -59,7 +60,7 @@ class TargetRepositoryImpl implements TargetRepository {
       );
     }
     try {
-      final now = DateTime.now().millisecondsSinceEpoch;
+      final now = clock.now().millisecondsSinceEpoch;
       await _dao.upsertAllWithProfile(
         _targetRows(targets, now: now),
         UserProfileTableCompanion.insert(
@@ -80,7 +81,7 @@ class TargetRepositoryImpl implements TargetRepository {
   }
 
   List<TargetRangesTableCompanion> _targetRows(TargetSet targets, {int? now}) {
-    final timestamp = now ?? DateTime.now().millisecondsSinceEpoch;
+    final timestamp = now ?? clock.now().millisecondsSinceEpoch;
     return [
       for (final type in ReadingType.values)
         TargetRangesTableCompanion.insert(
