@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gluko_apps/core/di/injection.dart';
 import 'package:flutter_gluko_apps/core/router/app_router.dart';
 import 'package:flutter_gluko_apps/core/theme/app_spacing.dart';
+import 'package:flutter_gluko_apps/features/backup/domain/backup_service.dart';
+import 'package:flutter_gluko_apps/features/backup/presentation/pages/backup_page.dart';
 import 'package:go_router/go_router.dart';
 
 /// S-09 Pengaturan.
@@ -13,6 +16,8 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titleStyle = Theme.of(context).textTheme.titleSmall;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Pengaturan')),
       body: ListView(
@@ -21,7 +26,7 @@ class SettingsPage extends StatelessWidget {
           vertical: AppSpacing.sm,
         ),
         children: [
-          Text('Pemantauan', style: Theme.of(context).textTheme.titleSmall),
+          Text('Pemantauan', style: titleStyle),
           const SizedBox(height: AppSpacing.sm),
           Card(
             child: Column(
@@ -55,19 +60,9 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
-          Text('Akan hadir', style: Theme.of(context).textTheme.titleSmall),
+          Text('Data', style: titleStyle),
           const SizedBox(height: AppSpacing.sm),
-          const Card(
-            child: Column(
-              children: [
-                _UpcomingSetting(
-                  icon: Icons.backup_outlined,
-                  title: 'Backup & restore',
-                  subtitle: 'Cadangan terenkripsi · Sprint 4',
-                ),
-              ],
-            ),
-          ),
+          const _BackupTile(),
           const SizedBox(height: AppSpacing.xl),
           const ListTile(
             leading: Icon(Icons.info_outline),
@@ -83,18 +78,50 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-class _UpcomingSetting extends StatelessWidget {
-  const new({required this.icon, required this.title, required this.subtitle});
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
+/// PRD F-09 AC3: tanggal backup terakhir + pengingat bila > 30 hari.
+class _BackupTile extends StatefulWidget {
+  const new();
 
   @override
-  Widget build(BuildContext context) => ListTile(
-    enabled: false,
-    leading: Icon(icon),
-    title: Text(title),
-    subtitle: Text(subtitle),
-  );
+  State<_BackupTile> createState() => _BackupTileState();
+}
+
+class _BackupTileState extends State<_BackupTile> {
+  late final Stream<DateTime?> _lastBackup = getIt<BackupService>()
+      .watchLastBackup();
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<DateTime?>(
+      stream: _lastBackup,
+      builder: (context, snapshot) {
+        final last = snapshot.data;
+        final loaded = snapshot.connectionState != ConnectionState.waiting;
+        final nudge = loaded && needsBackupNudge(last, DateTime.now());
+        final scheme = Theme.of(context).colorScheme;
+
+        return Card(
+          color: nudge ? scheme.tertiaryContainer : null,
+          child: ListTile(
+            leading: Icon(
+              nudge ? Icons.warning_amber_rounded : Icons.backup_outlined,
+            ),
+            title: const Text('Backup & restore'),
+            subtitle: Text(
+              !loaded
+                  ? 'Memuat…'
+                  : last == null
+                  ? 'Belum pernah backup. Buat sekarang agar data aman.'
+                  : nudge
+                  ? 'Terakhir ${formatBackupDate(last)} — sudah lebih dari '
+                        '30 hari.'
+                  : 'Terakhir ${formatBackupDate(last)}',
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => context.pushNamed(AppRoute.backup),
+          ),
+        );
+      },
+    );
+  }
 }

@@ -19,6 +19,15 @@ import 'package:flutter_gluko_apps/database/daos/profile_dao.dart' as _i598;
 import 'package:flutter_gluko_apps/database/daos/reminder_dao.dart' as _i216;
 import 'package:flutter_gluko_apps/database/daos/settings_dao.dart' as _i851;
 import 'package:flutter_gluko_apps/database/daos/target_dao.dart' as _i385;
+import 'package:flutter_gluko_apps/database/database_snapshot.dart' as _i852;
+import 'package:flutter_gluko_apps/features/backup/data/backup_file_gateway_impl.dart'
+    as _i463;
+import 'package:flutter_gluko_apps/features/backup/domain/backup_codec.dart'
+    as _i764;
+import 'package:flutter_gluko_apps/features/backup/domain/backup_service.dart'
+    as _i214;
+import 'package:flutter_gluko_apps/features/backup/presentation/cubit/backup_cubit.dart'
+    as _i432;
 import 'package:flutter_gluko_apps/features/glucose/data/repositories/glucose_repository_impl.dart'
     as _i27;
 import 'package:flutter_gluko_apps/features/glucose/domain/repositories/glucose_repository.dart'
@@ -84,7 +93,7 @@ import 'package:flutter_gluko_apps/features/security/domain/services/security_se
 import 'package:flutter_gluko_apps/features/security/domain/usecases/reset_app_data.dart'
     as _i210;
 import 'package:flutter_gluko_apps/features/security/presentation/cubit/app_lock_cubit.dart'
-    as _i432;
+    as _i433;
 import 'package:flutter_gluko_apps/features/startup/domain/usecases/app_startup.dart'
     as _i391;
 import 'package:flutter_gluko_apps/features/target/data/repositories/target_repository_impl.dart'
@@ -126,6 +135,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => databaseModule.secureStorage,
     );
+    gh.lazySingleton<_i764.BackupCodec>(() => _i764.BackupCodec());
     gh.lazySingleton<_i593.PinHasher>(() => _i593.PinHasher());
     gh.lazySingleton<_i474.SecretStore>(
       () => _i321.KeystoreSecretStore(gh<_i558.FlutterSecureStorage>()),
@@ -140,6 +150,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i321.LocalBiometricAuthenticator(),
     );
     gh.lazySingleton<_i474.SecureScreen>(() => _i321.ChannelSecureScreen());
+    gh.lazySingleton<_i214.BackupFileGateway>(
+      () => _i463.PlatformBackupFileGateway(),
+    );
     gh.lazySingleton<_i974.AppDatabase>(
       () => databaseModule.database(gh<_i397.DatabaseKeyStore>()),
     );
@@ -158,6 +171,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i851.SettingsDao>(
       () => databaseModule.settingsDao(gh<_i974.AppDatabase>()),
     );
+    gh.lazySingleton<_i852.DatabaseSnapshot>(
+      () => _i852.DatabaseSnapshot(gh<_i974.AppDatabase>()),
+    );
     gh.lazySingleton<_i344.ReminderRepository>(
       () => _i212.ReminderRepositoryImpl(gh<_i216.ReminderDao>()),
     );
@@ -175,6 +191,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i837.RemindersCubit(
         gh<_i344.ReminderRepository>(),
         gh<_i295.NotificationScheduler>(),
+      ),
+    );
+    gh.lazySingleton<_i214.BackupService>(
+      () => _i214.BackupService(
+        gh<_i974.AppDatabase>(),
+        gh<_i852.DatabaseSnapshot>(),
+        gh<_i764.BackupCodec>(),
+        gh<_i851.SettingsDao>(),
       ),
     );
     gh.factory<_i146.ReclassifyReadings>(
@@ -218,6 +242,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i525.ProfileRepository>(),
       ),
     );
+    gh.factory<_i432.BackupCubit>(
+      () => _i432.BackupCubit(
+        gh<_i214.BackupService>(),
+        gh<_i214.BackupFileGateway>(),
+      ),
+    );
     gh.lazySingleton<_i20.ReminderSync>(
       () => _i20.ReminderSync(
         gh<_i344.ReminderRepository>(),
@@ -243,8 +273,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i135.GetTargets>(
       () => _i135.GetTargets(gh<_i634.TargetRepository>()),
     );
-    gh.lazySingleton<_i432.AppLockCubit>(
-      () => _i432.AppLockCubit(
+    gh.lazySingleton<_i433.AppLockCubit>(
+      () => _i433.AppLockCubit(
         gh<_i1054.SecurityRepository>(),
         gh<_i474.BiometricAuthenticator>(),
         gh<_i474.SecureScreen>(),

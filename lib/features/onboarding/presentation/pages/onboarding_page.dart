@@ -86,7 +86,23 @@ class _OnboardingView extends StatelessWidget {
                       child: Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.xl),
                         child: switch (state.step) {
-                          OnboardingStep.welcome => const _WelcomeStep(),
+                          OnboardingStep.welcome => Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const _WelcomeStep(),
+                              const SizedBox(height: AppSpacing.lg),
+                              // HP baru atau setelah "Lupa PIN": data lama
+                              // bisa dikembalikan tanpa mengulang onboarding.
+                              TextButton.icon(
+                                onPressed: () =>
+                                    context.pushNamed(AppRoute.restore),
+                                icon: const Icon(Icons.restore),
+                                label: const Text(
+                                  'Punya file backup? Pulihkan',
+                                ),
+                              ),
+                            ],
+                          ),
                           OnboardingStep.disclaimer => _DisclaimerStep(
                             accepted: state.disclaimerAccepted,
                             onChanged: (v) =>

@@ -61,7 +61,7 @@ Ini hasil pembandingan PRD ↔ desain ↔ repo. Beberapa di antaranya harus dipu
 `app_theme.dart` memanggil `fontFamily: 'PlusJakartaSans'`, tapi `pubspec.yaml` tidak punya section `fonts`. Paket `google_fonts` **mengunduh font saat runtime** sehingga bentrok langsung dengan NFR-04 (build MVP tanpa permission INTERNET) dan akan fallback silent ke Roboto.
 → **Bundle TTF lokal** di `assets/fonts/` (weight 400/500/600/700/800), jangan `google_fonts`. Sekitar 1,2 MB, masih aman terhadap NFR-10.
 
-**B-2 — Kunci enkripsi file backup belum ditentukan.**
+**B-2 — Kunci enkripsi file backup: SELESAI, passphrase pengguna** (diputuskan 27 September 2026, diimplementasikan di Sprint 4.6).
 PRD hanya menyebut ".gtbak terenkripsi". Bila kuncinya adalah kunci DB dari Android Keystore, file **tidak bisa dipulihkan di HP baru** — padahal itu justru mitigasi risiko "data hilang saat ganti HP" di PRD 10.2. Fitur F-09 akan gagal memenuhi tujuannya sendiri.
 → Kunci backup **diturunkan dari passphrase yang diinput pengguna** (PBKDF2-HMAC-SHA256, ≥ 100k iterasi, salt acak di header) + AES-256-GCM. Header plaintext: `{magic, schema_version, created_at, kdf, salt, iterations}`; checksum SHA-256 atas ciphertext.
 
@@ -236,6 +236,12 @@ Tanpa ini, semua sprint berikutnya menumpuk utang konfigurasi.
 
 **Gate:** notifikasi hidup setelah reboot di perangkat fisik · backup → wipe → restore menghasilkan data identik · lupa-PIN punya jalan keluar.
 
+**Status (27 September 2026):** 4.1–4.8 terimplementasi dan ter-commit, 207 test lolos, `flutter analyze` bersih, APK debug ter-build.
+- Gate "backup → wipe → restore identik" dan "lupa-PIN punya jalan keluar" dibuktikan lewat test otomatis (`test/features/backup/backup_test.dart`, `test/features/security/`).
+- Gate "notifikasi hidup setelah reboot" **belum diverifikasi**: butuh perangkat fisik. Receiver boot sudah terdaftar di manifest dan notifikasi dijadwalkan sebagai pengulangan mingguan.
+- Catatan desain: pengingat puasa "dilewati" dengan menggeser kemunculan pertama ke minggu berikutnya; `ReminderSync` merekonsiliasi jadwal saat pengingat berubah, GDP hari ini tersimpan/dihapus, dan aplikasi kembali ke depan.
+- Format `.gtbak`: `GTBAK\x01` + header JSON plaintext + AES-256-GCM (PBKDF2-HMAC-SHA256 200k iterasi); isinya dump logis per tabel ter-gzip. Setelan terikat perangkat (status kunci, penghitung PIN, `last_backup_at`) tidak ikut backup.
+
 ### Sprint 5 (minggu 9–10) — Pengerasan & Rilis MVP
 
 | ID | Tugas |
@@ -289,7 +295,7 @@ Ditunda per keputusan B-3, bukan dibatalkan. Ruang lingkupnya kelak: `flutter cr
 ## 8. Yang Perlu Diputuskan
 
 - [x] ~~**B-3** MVP Android saja, atau Android + iOS?~~ → **Android saja**, diputuskan 26 September 2026. iOS jadi item pasca-MVP.
-- [ ] **B-2** Setuju backup memakai passphrase pengguna (bisa dipulihkan di HP baru) alih-alih kunci Keystore?
+- [x] ~~**B-2** Setuju backup memakai passphrase pengguna (bisa dipulihkan di HP baru) alih-alih kunci Keystore?~~ → **passphrase pengguna**, diputuskan 27 September 2026.
 - [x] ~~**B-1** Bundle TTF Plus Jakarta Sans lokal~~ → **selesai di Sprint 0.3**: 5 weight statis (400/500/600/700/800) + OFL diambil dari repo foundry `tokotype/PlusJakartaSans`, total 652 KB, terdaftar di `pubspec.yaml`. `google_fonts` tidak dipakai.
 - [ ] Tipe "2 Jam PP" masuk MVP atau ditunda? (PRD 10.3 masih terbuka; desain sudah memuatnya di 3 layar, jadi rekomendasi: **masuk MVP**)
 - [ ] Nama aplikasi final. Sprint 0.4 memakai **`com.adipurwanto.glukotrack`** dan label **GlukoTrack** sebagai nilai kerja — mudah diganti sekarang, **tidak bisa** diganti setelah rilis pertama ke Play (applicationId permanen), jadi konfirmasikan sebelum Sprint 5.8.

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gluko_apps/core/di/injection.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/core/router/app_shell.dart';
+import 'package:flutter_gluko_apps/features/backup/presentation/pages/backup_page.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/dashboard_page.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/history_page.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/reading_detail_page.dart';
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/reading_form_page.dart';
 import 'package:flutter_gluko_apps/features/onboarding/presentation/pages/onboarding_page.dart';
+import 'package:flutter_gluko_apps/features/reminder/domain/usecases/reminder_sync.dart';
 import 'package:flutter_gluko_apps/features/reminder/presentation/pages/reminders_page.dart';
 import 'package:flutter_gluko_apps/features/security/presentation/pages/security_settings_page.dart';
 import 'package:flutter_gluko_apps/features/settings/presentation/pages/settings_page.dart';
@@ -31,6 +34,10 @@ abstract final class AppRoute {
   static const String target = 'target';
   static const String reminders = 'reminders';
   static const String security = 'security';
+  static const String backup = 'backup';
+
+  /// Pulihkan backup dari onboarding (HP baru), di luar shell tab.
+  static const String restore = 'restore';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -51,6 +58,18 @@ GoRouter createRouter({String initialLocation = '/'}) {
         path: '/onboarding',
         name: AppRoute.onboarding,
         builder: (context, state) => const OnboardingPage(),
+      ),
+      GoRoute(
+        path: '/pulihkan',
+        name: AppRoute.restore,
+        builder: (context, state) => BackupPage(
+          restoreOnly: true,
+          onRestored: () {
+            // Profil hasil restore sudah menandai onboarding selesai.
+            getIt<ReminderSync>().start();
+            context.goNamed(AppRoute.dashboard);
+          },
+        ),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
@@ -133,6 +152,11 @@ GoRouter createRouter({String initialLocation = '/'}) {
                     path: 'keamanan',
                     name: AppRoute.security,
                     builder: (context, state) => const SecuritySettingsPage(),
+                  ),
+                  GoRoute(
+                    path: 'backup',
+                    name: AppRoute.backup,
+                    builder: (context, state) => const BackupPage(),
                   ),
                 ],
               ),
