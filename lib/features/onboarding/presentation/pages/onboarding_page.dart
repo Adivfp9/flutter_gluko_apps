@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
@@ -7,6 +9,8 @@ import 'package:flutter_gluko_apps/core/theme/app_palette.dart';
 import 'package:flutter_gluko_apps/core/theme/app_spacing.dart';
 import 'package:flutter_gluko_apps/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:flutter_gluko_apps/features/onboarding/presentation/cubit/onboarding_state.dart';
+import 'package:flutter_gluko_apps/features/reminder/domain/services/notification_scheduler.dart';
+import 'package:flutter_gluko_apps/features/reminder/domain/usecases/reminder_sync.dart';
 import 'package:go_router/go_router.dart';
 
 /// S-02 Onboarding, empat langkah (PRD F-10 AC1).
@@ -25,6 +29,22 @@ class OnboardingPage extends StatelessWidget {
   }
 }
 
+/// Menyalakan sinkronisasi pengingat setelah onboarding selesai.
+///
+/// Izin notifikasi baru diminta di sini — bukan saat aplikasi pertama dibuka —
+/// karena pengguna baru saja memilih jam pengingat, jadi alasannya jelas.
+Future<void> _activateReminders({required bool askPermission}) async {
+  try {
+    if (askPermission) {
+      await getIt<NotificationScheduler>().requestPermissions();
+    }
+  } on Object {
+    // Penolakan izin tidak boleh menghalangi pengguna masuk ke beranda;
+    // layar Pengingat menampilkan banner untuk memintanya lagi.
+  }
+  getIt<ReminderSync>().start();
+}
+
 class _OnboardingView extends StatelessWidget {
   const new();
 
@@ -37,6 +57,9 @@ class _OnboardingView extends StatelessWidget {
           a.isDone != b.isDone || a.errorMessage != b.errorMessage,
       listener: (context, state) {
         if (state.isDone) {
+          unawaited(
+            _activateReminders(askPermission: state.fastingReminderEnabled),
+          );
           context.goNamed(AppRoute.dashboard);
           return;
         }

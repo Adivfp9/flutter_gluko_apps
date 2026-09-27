@@ -24,14 +24,26 @@ class SettingsPage extends StatelessWidget {
           Text('Pemantauan', style: Theme.of(context).textTheme.titleSmall),
           const SizedBox(height: AppSpacing.sm),
           Card(
-            child: ListTile(
-              leading: const Icon(Icons.tune),
-              title: const Text('Target & satuan'),
-              subtitle: const Text(
-                'Atur rentang GDP, GDS, 2 Jam PP, serta mg/dL atau mmol/L.',
-              ),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.pushNamed(AppRoute.target),
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.tune),
+                  title: const Text('Target & satuan'),
+                  subtitle: const Text(
+                    'Atur rentang GDP, GDS, 2 Jam PP, serta mg/dL atau mmol/L.',
+                  ),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.pushNamed(AppRoute.target),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.notifications_outlined),
+                  title: const Text('Pengingat'),
+                  subtitle: const Text('Jadwal cek gula darah harian.'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.pushNamed(AppRoute.reminders),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
@@ -40,12 +52,6 @@ class SettingsPage extends StatelessWidget {
           const Card(
             child: Column(
               children: [
-                _UpcomingSetting(
-                  icon: Icons.notifications_outlined,
-                  title: 'Pengingat',
-                  subtitle: 'Jadwal cek gula darah · Sprint 4',
-                ),
-                Divider(height: 1),
                 _UpcomingSetting(
                   icon: Icons.lock_outline,
                   title: 'Keamanan',

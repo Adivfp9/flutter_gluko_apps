@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gluko_apps/core/di/injection.dart';
 import 'package:flutter_gluko_apps/core/router/app_router.dart';
 import 'package:flutter_gluko_apps/core/theme/app_palette.dart';
+import 'package:flutter_gluko_apps/features/reminder/domain/services/notification_scheduler.dart';
+import 'package:flutter_gluko_apps/features/reminder/domain/usecases/reminder_sync.dart';
 import 'package:flutter_gluko_apps/features/startup/domain/usecases/app_startup.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,9 +31,15 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<void> _bootstrap() async {
     String target;
+    String? launchPayload;
     try {
       final result = await getIt<AppStartup>().run();
       target = result.onboardingDone ? AppRoute.dashboard : AppRoute.onboarding;
+      if (result.onboardingDone) {
+        // Jadwal direkonsiliasi setiap aplikasi dibuka (rencana §3.3).
+        getIt<ReminderSync>().start();
+        launchPayload = await _takeLaunchPayload();
+      }
     } on Object {
       // Kalau pemeriksaan gagal, arahkan ke onboarding: lebih aman meminta
       // pengguna menyetujui disclaimer lagi daripada membuka layar kosong.
@@ -37,7 +47,18 @@ class _SplashPageState extends State<SplashPage> {
     }
 
     if (!mounted) return;
-    context.goNamed(target);
+    final router = GoRouter.of(context)..goNamed(target);
+    // Aplikasi dibuka dari notifikasi: beranda tetap di bawah form catat,
+    // sehingga tombol kembali tidak menutup aplikasi (PRD F-07 AC3).
+    if (launchPayload != null) unawaited(router.push(launchPayload));
+  }
+
+  Future<String?> _takeLaunchPayload() async {
+    try {
+      return await getIt<NotificationScheduler>().takeLaunchPayload();
+    } on Object {
+      return null;
+    }
   }
 
   @override

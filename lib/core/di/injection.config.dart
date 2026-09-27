@@ -59,8 +59,18 @@ import 'package:flutter_gluko_apps/features/profile/domain/usecases/save_profile
     as _i550;
 import 'package:flutter_gluko_apps/features/reminder/data/repositories/reminder_repository_impl.dart'
     as _i212;
+import 'package:flutter_gluko_apps/features/reminder/data/services/local_notification_scheduler.dart'
+    as _i1012;
 import 'package:flutter_gluko_apps/features/reminder/domain/repositories/reminder_repository.dart'
     as _i344;
+import 'package:flutter_gluko_apps/features/reminder/domain/services/notification_scheduler.dart'
+    as _i295;
+import 'package:flutter_gluko_apps/features/reminder/domain/usecases/plan_reminder_schedule.dart'
+    as _i308;
+import 'package:flutter_gluko_apps/features/reminder/domain/usecases/reminder_sync.dart'
+    as _i20;
+import 'package:flutter_gluko_apps/features/reminder/presentation/cubit/reminders_cubit.dart'
+    as _i837;
 import 'package:flutter_gluko_apps/features/startup/domain/usecases/app_startup.dart'
     as _i391;
 import 'package:flutter_gluko_apps/features/target/data/repositories/target_repository_impl.dart'
@@ -95,9 +105,15 @@ extension GetItInjectableX on _i174.GetIt {
       () => const _i239.BuildDashboardSummary(),
     );
     gh.factory<_i725.ClassifyReading>(() => const _i725.ClassifyReading());
+    gh.factory<_i308.PlanReminderSchedule>(
+      () => const _i308.PlanReminderSchedule(),
+    );
     gh.factory<_i546.BuildTrendSummary>(() => const _i546.BuildTrendSummary());
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => databaseModule.secureStorage,
+    );
+    gh.lazySingleton<_i295.NotificationScheduler>(
+      () => _i1012.LocalNotificationScheduler(),
     );
     gh.lazySingleton<_i397.DatabaseKeyStore>(
       () => _i397.DatabaseKeyStore(gh<_i558.FlutterSecureStorage>()),
@@ -125,6 +141,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i848.GlucoseRepository>(
       () => _i27.GlucoseRepositoryImpl(gh<_i305.GlucoseDao>()),
+    );
+    gh.factory<_i837.RemindersCubit>(
+      () => _i837.RemindersCubit(
+        gh<_i344.ReminderRepository>(),
+        gh<_i295.NotificationScheduler>(),
+      ),
     );
     gh.factory<_i146.ReclassifyReadings>(
       () => _i146.ReclassifyReadings(
@@ -165,6 +187,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i974.AppDatabase>(),
         gh<_i851.SettingsDao>(),
         gh<_i525.ProfileRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i20.ReminderSync>(
+      () => _i20.ReminderSync(
+        gh<_i344.ReminderRepository>(),
+        gh<_i848.GlucoseRepository>(),
+        gh<_i295.NotificationScheduler>(),
+        gh<_i308.PlanReminderSchedule>(),
       ),
     );
     gh.factory<_i521.SaveTargets>(
