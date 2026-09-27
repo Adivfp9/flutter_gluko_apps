@@ -13,6 +13,8 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - "**/generated_plugin_registrant.dart"
+    # Helper SchemaVerifier hasil `drift_dev schema generate`.
+    - "test/drift/**/generated/**"
     - "lib/l10n/generated/**"
 
   language:

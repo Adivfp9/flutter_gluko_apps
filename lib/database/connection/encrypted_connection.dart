@@ -24,9 +24,16 @@ LazyDatabase openEncryptedDatabase(DatabaseKeyStore keyStore) {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final file = File(p.join(dir.path, kDatabaseFileName));
-    final keyHex = await keyStore.readOrCreate();
+    return openEncryptedFile(file, await keyStore.readOrCreate());
+  });
+}
 
-    return NativeDatabase.createInBackground(
+/// Membuka [file] sebagai database SQLCipher dengan kunci mentah [keyHex].
+///
+/// Dipisah dari [openEncryptedDatabase] supaya enkripsinya bisa diuji pada
+/// berkas sementara, tanpa path_provider dan Keystore.
+QueryExecutor openEncryptedFile(File file, String keyHex) =>
+    NativeDatabase.createInBackground(
       file,
       setup: (db) {
         db
@@ -40,5 +47,3 @@ LazyDatabase openEncryptedDatabase(DatabaseKeyStore keyStore) {
           ..execute('PRAGMA journal_mode = WAL;');
       },
     );
-  });
-}
