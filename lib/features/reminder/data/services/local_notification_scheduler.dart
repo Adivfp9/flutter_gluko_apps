@@ -34,8 +34,8 @@ class LocalNotificationScheduler implements NotificationScheduler {
   bool _initialized = false;
   bool _launchPayloadTaken = false;
 
-  AndroidFlutterLocalNotificationsPlugin? get _android =>
-      _plugin.resolvePlatformSpecificImplementation<
+  AndroidFlutterLocalNotificationsPlugin? get _android => _plugin
+      .resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin
       >();
 

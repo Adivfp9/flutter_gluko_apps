@@ -48,15 +48,8 @@ class ScheduledNotification {
       other.payload == payload;
 
   @override
-  int get hashCode => Object.hash(
-    id,
-    reminderId,
-    weekday,
-    firstFireAt,
-    title,
-    body,
-    payload,
-  );
+  int get hashCode =>
+      Object.hash(id, reminderId, weekday, firstFireAt, title, body, payload);
 
   @override
   String toString() => 'ScheduledNotification($id, $firstFireAt)';

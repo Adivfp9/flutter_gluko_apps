@@ -81,12 +81,9 @@ class RemindersCubit extends Cubit<RemindersState> {
     final id = reminder.id;
     if (id == null) return;
     final result = await _repository.setActive(id, isActive: isActive);
-    result.match(
-      (failure) {
-        if (!isClosed) emit(state.copyWith(errorMessage: failure.message));
-      },
-      (_) {},
-    );
+    result.match((failure) {
+      if (!isClosed) emit(state.copyWith(errorMessage: failure.message));
+    }, (_) {});
   }
 
   Future<void> delete(Reminder reminder) async {

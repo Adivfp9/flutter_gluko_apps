@@ -125,8 +125,7 @@ class _RemindersViewState extends State<_RemindersView>
                     96,
                   ),
                   children: [
-                    if (state.needsPermission)
-                      _PermissionBanner(state: state),
+                    if (state.needsPermission) _PermissionBanner(state: state),
                     if (state.reminders.isEmpty)
                       const _EmptyReminders()
                     else
@@ -369,14 +368,8 @@ const _oemSteps = [
     'Setelan › Baterai › Konsumsi daya latar belakang tinggi › aktifkan '
         'GlukoTrack.',
   ),
-  (
-    'Samsung',
-    'Setelan › Aplikasi › GlukoTrack › Baterai › Tidak dibatasi.',
-  ),
-  (
-    'Lainnya',
-    'Setelan › Aplikasi › GlukoTrack › Baterai › Jangan optimalkan.',
-  ),
+  ('Samsung', 'Setelan › Aplikasi › GlukoTrack › Baterai › Tidak dibatasi.'),
+  ('Lainnya', 'Setelan › Aplikasi › GlukoTrack › Baterai › Jangan optimalkan.'),
 ];
 
 class _ReminderEditor extends StatefulWidget {

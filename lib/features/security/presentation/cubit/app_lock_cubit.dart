@@ -30,7 +30,9 @@ class AppLockCubit extends Cubit<AppLockState> {
       await _apply(settings);
       emit(
         state.copyWith(
-          status: settings.lockEnabled ? LockStatus.locked : LockStatus.unlocked,
+          status: settings.lockEnabled
+              ? LockStatus.locked
+              : LockStatus.unlocked,
           lockedUntil: await _repository.lockedUntil(),
         ),
       );

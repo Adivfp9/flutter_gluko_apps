@@ -98,9 +98,7 @@ class ReminderSync {
       final plan = _plan(
         reminders: reminders,
         now: now,
-        fastingLoggedDates: {
-          if (_fastingLoggedToday) LocalDate.ofLocal(now),
-        },
+        fastingLoggedDates: {if (_fastingLoggedToday) LocalDate.ofLocal(now)},
       );
       try {
         await _scheduler.replaceAll(plan);

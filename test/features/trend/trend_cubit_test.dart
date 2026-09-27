@@ -95,9 +95,7 @@ void main() {
 
     await seed(localDate: '2026-09-26', value: 180, type: ReadingType.random);
 
-    final state = await waitFor(
-      (s) => s.summary?.randomStats.count == 1,
-    );
+    final state = await waitFor((s) => s.summary?.randomStats.count == 1);
     expect(state.summary!.randomStats.average, 180);
   });
 
@@ -111,8 +109,7 @@ void main() {
     cubit.setPeriod(TrendPeriod.quarter);
     final state = await waitFor(
       (s) =>
-          s.period == TrendPeriod.quarter &&
-          s.summary?.fastingStats.count == 2,
+          s.period == TrendPeriod.quarter && s.summary?.fastingStats.count == 2,
     );
     expect(state.summary!.fromLocalDate, '2026-06-30');
     expect(state.summary!.fastingStats.average, 110);
@@ -132,20 +129,15 @@ void main() {
   });
 
   test('toggle tipe tidak pernah menyembunyikan semua garis', () {
-    expect(cubit.state.visibleTypes, {
-      ReadingType.fasting,
-      ReadingType.random,
-    });
+    expect(cubit.state.visibleTypes, {ReadingType.fasting, ReadingType.random});
 
     cubit.toggleType(ReadingType.random);
     expect(cubit.state.visibleTypes, {ReadingType.fasting});
 
     cubit.toggleType(ReadingType.fasting);
-    expect(
-      cubit.state.visibleTypes,
-      {ReadingType.fasting},
-      reason: 'minimal satu tipe harus tetap tampil',
-    );
+    expect(cubit.state.visibleTypes, {
+      ReadingType.fasting,
+    }, reason: 'minimal satu tipe harus tetap tampil');
 
     cubit.toggleType(ReadingType.postprandial2h);
     expect(cubit.state.visibleTypes, {

@@ -102,14 +102,17 @@ void main() {
       expect(await repository.load(), LockSettings.disabled);
     });
 
-    test('mengaktifkan kunci menyimpan hash di Keystore, bukan di DB', () async {
-      await repository.enableLock('123456');
+    test(
+      'mengaktifkan kunci menyimpan hash di Keystore, bukan di DB',
+      () async {
+        await repository.enableLock('123456');
 
-      final settings = await repository.load();
-      expect(settings.lockEnabled, isTrue);
-      expect(secrets.values[SettingKeys.pinHash], isNotNull);
-      expect(await db.settingsDao.read(SettingKeys.pinHash), isNull);
-    });
+        final settings = await repository.load();
+        expect(settings.lockEnabled, isTrue);
+        expect(secrets.values[SettingKeys.pinHash], isNotNull);
+        expect(await db.settingsDao.read(SettingKeys.pinHash), isNull);
+      },
+    );
 
     test('PIN tidak valid ditolak saat disimpan', () async {
       await expectLater(repository.enableLock('12345'), throwsArgumentError);
@@ -201,10 +204,7 @@ void main() {
         (await repository.verifyPin('123456', now: t0)).isSuccess,
         isFalse,
       );
-      expect(
-        (await repository.verifyPin('654321', now: t0)).isSuccess,
-        isTrue,
-      );
+      expect((await repository.verifyPin('654321', now: t0)).isSuccess, isTrue);
     });
   });
 }

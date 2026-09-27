@@ -228,10 +228,8 @@ class PinPadState extends State<PinPad> {
   Widget build(BuildContext context) {
     final palette = context.palette;
 
-    Widget key(String digit) => _PadKey(
-      label: digit,
-      onTap: widget.enabled ? () => _tap(digit) : null,
-    );
+    Widget key(String digit) =>
+        _PadKey(label: digit, onTap: widget.enabled ? () => _tap(digit) : null);
 
     return Column(
       children: [

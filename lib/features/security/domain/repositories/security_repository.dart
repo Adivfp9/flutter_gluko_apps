@@ -30,11 +30,7 @@ enum PinCheckOutcome { success, wrong, coolingDown }
 /// Hasil verifikasi PIN beserta status pembatasan percobaan.
 @immutable
 class PinCheck {
-  const new({
-    required this.outcome,
-    this.failedAttempts = 0,
-    this.lockedUntil,
-  });
+  const new({required this.outcome, this.failedAttempts = 0, this.lockedUntil});
 
   final PinCheckOutcome outcome;
   final int failedAttempts;

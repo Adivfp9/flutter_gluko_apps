@@ -218,9 +218,9 @@ class BackupCodec {
       if (start + length > bytes.length) {
         throw const FormatException('header terpotong');
       }
-      final json =
-          jsonDecode(utf8.decode(bytes.sublist(start, start + length)))
-              as Map<String, Object?>;
+      final json = jsonDecode(
+        utf8.decode(bytes.sublist(start, start + length)),
+      ) as Map<String, Object?>;
 
       if (json['format'] != formatVersion ||
           json['kdf'] != 'pbkdf2-sha256' ||

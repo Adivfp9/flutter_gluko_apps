@@ -55,9 +55,7 @@ class BackupCubit extends Cubit<BackupState> {
       );
     } on Object catch (e) {
       if (!isClosed) {
-        emit(
-          state.copyWith(busyLabel: null, errorMessage: 'Backup gagal: $e'),
-        );
+        emit(state.copyWith(busyLabel: null, errorMessage: 'Backup gagal: $e'));
       }
     }
   }

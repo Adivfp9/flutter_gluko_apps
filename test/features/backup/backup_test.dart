@@ -76,9 +76,8 @@ void main() {
     await db.settingsDao.write(SettingKeys.themeMode, 'dark');
   }
 
-  Matcher backupError(BackupErrorKind kind) => throwsA(
-    isA<BackupException>().having((e) => e.kind, 'kind', kind),
-  );
+  Matcher backupError(BackupErrorKind kind) =>
+      throwsA(isA<BackupException>().having((e) => e.kind, 'kind', kind));
 
   group('BackupCodec', () {
     Future<Uint8List> sample({int schema = 1}) => codec.encode(
