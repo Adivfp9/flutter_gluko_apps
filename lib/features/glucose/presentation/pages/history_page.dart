@@ -94,6 +94,7 @@ class HistoryView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         onPressed: () => context.pushNamed(AppRoute.record),
         tooltip: 'Catat gula darah',
         child: const Icon(Icons.add),
@@ -165,19 +166,17 @@ class _Header extends StatelessWidget {
 
     // Audit 5.1: pada text scale besar judul dan tombol segmen tidak muat
     // berdampingan, jadi tombol turun ke bawah judul.
-    if (MediaQuery.textScalerOf(context).scale(1) > 1.3) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          title,
-          const SizedBox(height: AppSpacing.sm),
-          toggle,
-        ],
-      );
-    }
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [title, toggle],
+    // Wrap: bila judul dan tombol segmen tidak muat berdampingan (layar
+    // sempit atau text scale besar), tombol turun ke bawah judul.
+    return SizedBox(
+      width: double.infinity,
+      child: Wrap(
+        alignment: WrapAlignment.spaceBetween,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: AppSpacing.sm,
+        runSpacing: AppSpacing.sm,
+        children: [title, toggle],
+      ),
     );
   }
 }

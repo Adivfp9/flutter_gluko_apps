@@ -111,6 +111,7 @@ class _RemindersViewState extends State<_RemindersView>
         return Scaffold(
           appBar: AppBar(title: const Text('Pengingat')),
           floatingActionButton: FloatingActionButton.extended(
+            heroTag: null,
             onPressed: () => _openEditor(context),
             icon: const Icon(Icons.add),
             label: const Text('Tambah'),

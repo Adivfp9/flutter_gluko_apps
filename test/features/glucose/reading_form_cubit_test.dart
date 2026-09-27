@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_gluko_apps/core/domain/glucose_enums.dart';
 import 'package:flutter_gluko_apps/database/app_database.dart';
 import 'package:flutter_gluko_apps/features/glucose/data/repositories/glucose_repository_impl.dart';
+import 'package:flutter_gluko_apps/features/glucose/domain/entities/glucose_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/add_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/classify_reading.dart';
 import 'package:flutter_gluko_apps/features/glucose/domain/usecases/find_fasting_on.dart';
@@ -193,4 +194,74 @@ void main() {
       expect(cubit.state.savedReading?.type, ReadingType.random);
     },
   );
+
+  group('Edit mempertahankan waktu pengukuran (regresi Sprint 5.3)', () {
+    // 06.15 WIB = 23.15 UTC hari sebelumnya. Sebelumnya form edit memakai
+    // jam dinding bertanda UTC (06.15Z), yaitu 7 jam di depan instan aslinya.
+    final reading = GlucoseReading(
+      id: 1,
+      type: ReadingType.fasting,
+      valueMgDl: 105,
+      measuredAt: DateTime.utc(2026, 9, 26, 23, 15),
+      tzOffsetMinutes: 420,
+      status: GlucoseStatus.warning,
+      isCritical: false,
+    );
+
+    test('waktu di form adalah instan yang sama dengan tersimpan', () async {
+      final cubit = createCubit();
+      addTearDown(cubit.close);
+
+      await cubit.initializeForEdit(reading);
+
+      expect(
+        cubit.state.measuredAt!.isAtSameMomentAs(reading.measuredAt),
+        isTrue,
+        reason:
+            'form: ${cubit.state.measuredAt}, tersimpan: '
+            '${reading.measuredAt}',
+      );
+    });
+
+    test(
+      'catatan beberapa menit lalu bisa diedit (bukan "masa depan")',
+      () async {
+        final saved =
+            await AddReading.withClock(
+              readings,
+              targets,
+              const ClassifyReading(),
+              () => morning,
+            )(
+              AddReadingParams(
+                type: ReadingType.fasting,
+                valueMgDl: 105,
+                measuredAt: morning,
+              ),
+            );
+        final original = saved.getOrElse((f) => throw StateError(f.message));
+
+        final cubit = createCubit(now: morning.add(const Duration(minutes: 5)));
+        addTearDown(cubit.close);
+        await cubit.initializeForEdit(original);
+        cubit
+          ..appendKey('⌫')
+          ..appendKey('⌫')
+          ..appendKey('⌫')
+          ..appendKey('9')
+          ..appendKey('8');
+        await cubit.submit();
+
+        expect(cubit.state.errorMessage, isNull);
+        final updated = (await readings.findById(original.id!))
+            .getOrElse((_) => null)!;
+        expect(updated.valueMgDl, 98);
+        expect(
+          updated.measuredAt.isAtSameMomentAs(original.measuredAt),
+          isTrue,
+        );
+        expect(updated.localDate, original.localDate);
+      },
+    );
+  });
 }

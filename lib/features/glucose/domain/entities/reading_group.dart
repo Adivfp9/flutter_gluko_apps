@@ -13,23 +13,26 @@ class ReadingGroup {
   /// Isi kelompok, terbaru di atas.
   final List<GlucoseReading> readings;
 
+  /// Isi pembacaan dibandingkan penuh, bukan hanya ID: dengan ID saja, catatan
+  /// yang diedit (nilai/status berubah) dianggap sama, Cubit tidak memancarkan
+  /// state baru, dan Riwayat menampilkan nilai lama (ketahuan dari test alur
+  /// penuh Sprint 5.3).
   @override
   bool operator ==(Object other) =>
       other is ReadingGroup &&
       other.localDate == localDate &&
-      _sameIds(other.readings, readings);
+      _sameReadings(other.readings, readings);
 
-  static bool _sameIds(List<GlucoseReading> a, List<GlucoseReading> b) {
+  static bool _sameReadings(List<GlucoseReading> a, List<GlucoseReading> b) {
     if (a.length != b.length) return false;
     for (var i = 0; i < a.length; i++) {
-      if (a[i].id != b[i].id) return false;
+      if (a[i] != b[i]) return false;
     }
     return true;
   }
 
   @override
-  int get hashCode =>
-      Object.hash(localDate, Object.hashAll([for (final r in readings) r.id]));
+  int get hashCode => Object.hash(localDate, Object.hashAll(readings));
 }
 
 /// Mengelompokkan pembacaan per tanggal lokal, terbaru di atas.

@@ -52,7 +52,13 @@ class StatusBadge extends StatelessWidget {
     return Semantics(
       label: 'Status ${status.label}',
       child: Container(
-        width: width,
+        // Lebar desain sebagai minimum, bukan angka mati: "! Waspada" butuh
+        // sedikit lebih dari 78 dp dan terpecah dua baris (terlihat di
+        // golden). Batas atas menjaga baris riwayat tidak overflow pada text
+        // scale besar; di sana label boleh turun baris.
+        constraints: width == null
+            ? null
+            : BoxConstraints(minWidth: width!, maxWidth: width! * 1.6),
         padding: EdgeInsets.symmetric(
           horizontal: compact ? AppSpacing.sm : 10,
           vertical: compact ? 2 : 4,

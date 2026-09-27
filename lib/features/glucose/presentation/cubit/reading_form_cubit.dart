@@ -137,7 +137,11 @@ class ReadingFormCubit extends Cubit<ReadingFormState> {
         targets: targetsResult.getRight().toNullable(),
         valueMgDl: reading.valueMgDl,
         rawValue: UnitConverter.formatValue(reading.valueMgDl, unit),
-        measuredAt: reading.measuredAtLocal,
+        // Instan yang sama dalam zona perangkat. Jangan measuredAtLocal: itu
+        // jam dinding bertanda UTC (hanya untuk tampilan), yang membuat edit
+        // catatan beberapa jam terakhir ditolak sebagai "masa depan" dan
+        // menggeser waktu sebesar offset zona setiap kali disimpan.
+        measuredAt: reading.measuredAt.toLocal(),
         mealContext: reading.mealContext,
         hoursAfterMeal: reading.hoursAfterMeal,
         symptoms: reading.symptoms.toSet(),

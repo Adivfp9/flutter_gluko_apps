@@ -67,6 +67,9 @@ class _DashboardViewState extends State<DashboardView>
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
+        // Tanpa hero: FAB Beranda dan Riwayat hidup bersamaan di IndexedStack
+        // dan tag bawaan yang sama memicu assertion saat rute baru dibuka.
+        heroTag: null,
         onPressed: () => context.pushNamed(AppRoute.record),
         icon: const Icon(Icons.add),
         label: const Text('Catat'),
