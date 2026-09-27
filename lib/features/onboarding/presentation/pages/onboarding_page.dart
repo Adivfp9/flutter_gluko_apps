@@ -161,11 +161,15 @@ class _StepIndicator extends StatelessWidget {
               ],
             ),
           ),
-          ExcludeSemantics(
-            child: Text(
-              'Langkah ${index + 1} dari $total',
-              style: Theme.of(context).textTheme.labelMedium
-                  ?.copyWith(color: palette.textSecondary),
+          const SizedBox(width: AppSpacing.sm),
+          Flexible(
+            child: ExcludeSemantics(
+              child: Text(
+                'Langkah ${index + 1} dari $total',
+                textAlign: TextAlign.end,
+                style: Theme.of(context).textTheme.labelMedium
+                    ?.copyWith(color: palette.textSecondary),
+              ),
             ),
           ),
         ],

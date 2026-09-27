@@ -64,8 +64,9 @@ class DashboardCubit extends Cubit<DashboardState> {
 
   @override
   Future<void> close() async {
-    await _summarySub?.cancel();
-    await _profileSub?.cancel();
+    // Dibatalkan serentak: pembatalan berurutan menunda stream drift kedua
+    // sampai setelah widget dilepas (lihat TrendCubit.close).
+    await Future.wait([?_summarySub?.cancel(), ?_profileSub?.cancel()]);
     return await super.close();
   }
 }

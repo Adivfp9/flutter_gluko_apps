@@ -222,33 +222,37 @@ class _TodayCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: _ReadingCard(
-            title: 'Puasa hari ini',
-            icon: Icons.wb_twilight,
-            type: ReadingType.fasting,
-            reading: summary.todayFasting,
-            unit: unit,
-            emptyLabel: 'Catat sekarang',
+    // IntrinsicHeight: `stretch` di dalam ListView (tinggi tak terbatas)
+    // gagal layout; dengan ini kedua kartu tetap sama tinggi.
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: _ReadingCard(
+              title: 'Puasa hari ini',
+              icon: Icons.wb_twilight,
+              type: ReadingType.fasting,
+              reading: summary.todayFasting,
+              unit: unit,
+              emptyLabel: 'Catat sekarang',
+            ),
           ),
-        ),
-        const SizedBox(width: AppSpacing.md),
-        Expanded(
-          child: _ReadingCard(
-            title: 'Sewaktu terakhir',
-            icon: Icons.water_drop_outlined,
-            type: ReadingType.random,
-            reading: summary.lastRandom,
-            unit: unit,
-            emptyLabel: 'Belum ada',
-            showRelativeDay: true,
-            today: summary.today,
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: _ReadingCard(
+              title: 'Sewaktu terakhir',
+              icon: Icons.water_drop_outlined,
+              type: ReadingType.random,
+              reading: summary.lastRandom,
+              unit: unit,
+              emptyLabel: 'Belum ada',
+              showRelativeDay: true,
+              today: summary.today,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -373,7 +377,9 @@ class _WeeklyAverageCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Rata-rata 7 hari', style: text.titleMedium),
+                Expanded(
+                  child: Text('Rata-rata 7 hari', style: text.titleMedium),
+                ),
                 TextButton(
                   onPressed: () => context.goNamed(AppRoute.trend),
                   style: TextButton.styleFrom(
@@ -493,7 +499,9 @@ class _RecentCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Catatan terakhir', style: text.titleMedium),
+                Expanded(
+                  child: Text('Catatan terakhir', style: text.titleMedium),
+                ),
                 TextButton(
                   onPressed: () => context.goNamed(AppRoute.history),
                   style: TextButton.styleFrom(

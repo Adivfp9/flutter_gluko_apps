@@ -157,8 +157,9 @@ class HistoryCubit extends Cubit<HistoryState> {
 
   @override
   Future<void> close() async {
-    await _historySub?.cancel();
-    await _profileSub?.cancel();
+    // Dibatalkan serentak: pembatalan berurutan menunda stream drift kedua
+    // sampai setelah widget dilepas (lihat TrendCubit.close).
+    await Future.wait([?_historySub?.cancel(), ?_profileSub?.cancel()]);
     return await super.close();
   }
 }

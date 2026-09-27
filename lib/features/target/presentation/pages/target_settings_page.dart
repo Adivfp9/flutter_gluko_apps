@@ -127,15 +127,18 @@ class _TargetEditor extends StatelessWidget {
         ),
         children: [
           SegmentedButton<TargetPreset>(
+            // "Kustom" tidak bisa dipilih manual (otomatis saat angka diubah),
+            // jadi hanya ditampilkan ketika sedang aktif. Segmen nonaktif
+            // sebelumnya berteks abu berkontras 2,3:1 dan tidak diumumkan
+            // sebagai nonaktif oleh pembaca layar (audit 5.1).
             segments: [
               for (final preset in TargetPreset.values)
-                ButtonSegment<TargetPreset>(
-                  value: preset,
-                  label: Text(preset.label),
-                  enabled:
-                      preset != TargetPreset.custom ||
-                      state.selectedPreset == TargetPreset.custom,
-                ),
+                if (preset != TargetPreset.custom ||
+                    state.selectedPreset == TargetPreset.custom)
+                  ButtonSegment<TargetPreset>(
+                    value: preset,
+                    label: Text(preset.label),
+                  ),
             ],
             selected: {state.selectedPreset},
             onSelectionChanged: (values) => cubit.selectPreset(values.first),

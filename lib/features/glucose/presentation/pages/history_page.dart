@@ -148,23 +148,35 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.read<HistoryCubit>();
 
+    final title = Text(
+      'Riwayat',
+      style: Theme.of(context).textTheme.headlineSmall,
+    );
+    final toggle = SegmentedButton<HistoryViewMode>(
+      showSelectedIcon: false,
+      segments: const [
+        ButtonSegment(value: HistoryViewMode.list, label: Text('Daftar')),
+        ButtonSegment(value: HistoryViewMode.calendar, label: Text('Kalender')),
+      ],
+      selected: {state.viewMode},
+      onSelectionChanged: (s) => cubit.setViewMode(s.first),
+    );
+
+    // Audit 5.1: pada text scale besar judul dan tombol segmen tidak muat
+    // berdampingan, jadi tombol turun ke bawah judul.
+    if (MediaQuery.textScalerOf(context).scale(1) > 1.3) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          title,
+          const SizedBox(height: AppSpacing.sm),
+          toggle,
+        ],
+      );
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text('Riwayat', style: Theme.of(context).textTheme.headlineSmall),
-        SegmentedButton<HistoryViewMode>(
-          showSelectedIcon: false,
-          segments: const [
-            ButtonSegment(value: HistoryViewMode.list, label: Text('Daftar')),
-            ButtonSegment(
-              value: HistoryViewMode.calendar,
-              label: Text('Kalender'),
-            ),
-          ],
-          selected: {state.viewMode},
-          onSelectionChanged: (s) => cubit.setViewMode(s.first),
-        ),
-      ],
+      children: [title, toggle],
     );
   }
 }
@@ -425,9 +437,12 @@ class _CalendarView extends StatelessWidget {
               icon: const Icon(Icons.chevron_left),
               tooltip: 'Bulan sebelumnya',
             ),
-            Text(
-              DateFormat('MMMM y', 'id').format(month),
-              style: text.titleMedium,
+            Expanded(
+              child: Text(
+                DateFormat('MMMM y', 'id').format(month),
+                style: text.titleMedium,
+                textAlign: TextAlign.center,
+              ),
             ),
             IconButton(
               onPressed: () => cubit.loadCalendar(

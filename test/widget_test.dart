@@ -4,6 +4,7 @@ import 'package:flutter_gluko_apps/core/router/app_router.dart';
 import 'package:flutter_gluko_apps/database/app_database.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'helpers/app_harness.dart' show unmountApp;
 import 'helpers/test_di.dart';
 
 /// Test rangka navigasi.
@@ -38,6 +39,7 @@ void main() {
           reason: 'Tab $label harus ada di navigasi bawah',
         );
       }
+      await unmountApp(tester);
     });
 
     testWidgets('beranda kosong menampilkan ajakan mencatat', (tester) async {
@@ -49,6 +51,7 @@ void main() {
         find.textContaining('cek gula darah puasa besok pagi'),
         findsOneWidget,
       );
+      await unmountApp(tester);
     });
 
     testWidgets('berpindah tab mengganti isi layar', (tester) async {
@@ -70,11 +73,7 @@ void main() {
       );
       expect(find.text('14 hari'), findsOneWidget);
 
-      // Melepas pohon widget di dalam test: drift menjadwalkan timer saat
-      // stream query terakhir dibatalkan, dan timer itu harus sempat jalan.
-      await tester.pumpWidget(const SizedBox.shrink());
-      await tester.pump(const Duration(milliseconds: 1));
-      await tester.pump(const Duration(milliseconds: 1));
+      await unmountApp(tester);
     });
 
     testWidgets('tema gelap memakai latar gelap', (tester) async {
@@ -88,6 +87,7 @@ void main() {
       expect(theme.brightness, Brightness.dark);
       // PRD 6.2: background mode gelap #0B0D0F.
       expect(theme.scaffoldBackgroundColor, const Color(0xFF0B0D0F));
+      await unmountApp(tester);
     });
   });
 }

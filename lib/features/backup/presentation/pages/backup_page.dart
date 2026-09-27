@@ -194,7 +194,9 @@ class _BackupView extends StatelessWidget {
                   'dipulihkan di HP lain. Passphrase tidak disimpan di mana '
                   'pun — tanpa passphrase, backup tidak bisa dibuka oleh '
                   'siapa pun.',
-                  style: text.bodySmall?.copyWith(color: palette.textSecondary),
+                  style: text.bodyMedium?.copyWith(
+                    color: palette.textSecondary,
+                  ),
                 ),
               ],
             ),

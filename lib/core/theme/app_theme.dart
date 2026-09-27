@@ -15,6 +15,12 @@ abstract final class AppTheme {
       secondary: palette.textSecondary,
     );
 
+    // WCAG AA: teal mode gelap (#4FB8C0) terlalu terang untuk teks putih
+    // (rasio 2,35), jadi di atasnya dipakai warna latar gelap (rasio > 8).
+    final onBrand = brightness == Brightness.dark
+        ? palette.background
+        : Colors.white;
+
     final colorScheme =
         ColorScheme.fromSeed(
           seedColor: AppPalette.light.brand,
@@ -54,7 +60,7 @@ abstract final class AppTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: palette.brand,
-          foregroundColor: Colors.white,
+          foregroundColor: onBrand,
           minimumSize: const Size.fromHeight(AppSizes.primaryButtonHeight),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.button),
@@ -75,9 +81,9 @@ abstract final class AppTheme {
 
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: palette.brand,
-        foregroundColor: Colors.white,
+        foregroundColor: onBrand,
         elevation: 4,
-        extendedTextStyle: textTheme.labelLarge?.copyWith(color: Colors.white),
+        extendedTextStyle: textTheme.labelLarge?.copyWith(color: onBrand),
         shape: const StadiumBorder(),
       ),
 

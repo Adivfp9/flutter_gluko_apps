@@ -163,7 +163,7 @@ class _SecuritySettingsPageState extends State<SecuritySettingsPage> {
             Text(
               'Saat kunci aktif, isi layar disembunyikan di daftar aplikasi '
               'terbaru dan screenshot diblokir.',
-              style: text.bodySmall?.copyWith(color: palette.textSecondary),
+              style: text.bodyMedium?.copyWith(color: palette.textSecondary),
             ),
           ],
         ),

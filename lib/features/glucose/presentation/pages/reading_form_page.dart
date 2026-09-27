@@ -491,17 +491,31 @@ class _Keypad extends StatelessWidget {
       '0',
       '⌫',
     ];
-    return GridView.count(
-      crossAxisCount: 3,
-      mainAxisSpacing: AppSpacing.sm,
-      crossAxisSpacing: AppSpacing.sm,
-      childAspectRatio: 2.2,
+    final palette = context.palette;
+    // Tinggi tetap (bukan rasio aspek) agar tombol tidak pernah < 48 dp di
+    // layar sempit, dan warna eksplisit agar angka tetap kontras di kedua
+    // tema (audit 5.1).
+    return GridView(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: AppSpacing.sm,
+        crossAxisSpacing: AppSpacing.sm,
+        mainAxisExtent: AppSizes.keypadKeyHeight,
+      ),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: [
         for (final key in keys)
-          FilledButton.tonal(
+          FilledButton(
             key: Key('keypad-$key'),
+            style: FilledButton.styleFrom(
+              backgroundColor: palette.fieldFill,
+              foregroundColor: palette.textPrimary,
+              minimumSize: const Size.fromHeight(AppSizes.keypadKeyHeight),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.key),
+              ),
+            ),
             onPressed: () => cubit.appendKey(key),
             child: Text(key, style: Theme.of(context).textTheme.titleLarge),
           ),
