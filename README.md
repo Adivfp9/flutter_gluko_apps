@@ -11,6 +11,13 @@ Semua data tinggal di HP, terenkripsi, tanpa akun dan tanpa internet.
 
 Dibuat dengan Flutter, drift (SQLite + SQLCipher), dan BLoC.
 
+<p align="center">
+  <img src="docs/screenshots/01-beranda.png" width="200" alt="Beranda">
+  <img src="docs/screenshots/02-catat.png" width="200" alt="Form catat">
+  <img src="docs/screenshots/05-tren.png" width="200" alt="Tren">
+  <img src="docs/screenshots/09-beranda-gelap.png" width="200" alt="Beranda mode gelap">
+</p>
+
 ## Latar belakang
 
 Banyak orang dengan diabetes atau prediabetes mencatat hasil cek gula darah
@@ -23,6 +30,24 @@ pagi.
 
 GlukoTrack dibuat untuk kebutuhan yang sempit itu: mencatat satu nilai
 dalam kurang dari 10 detik, lalu melihat polanya.
+
+## Tampilan
+
+| Beranda | Catat | Riwayat | Kalender | Tren |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/01-beranda.png" width="160"> | <img src="docs/screenshots/02-catat.png" width="160"> | <img src="docs/screenshots/03-riwayat.png" width="160"> | <img src="docs/screenshots/04-kalender.png" width="160"> | <img src="docs/screenshots/05-tren.png" width="160"> |
+
+| Target | Pengingat | Kunci PIN | Beranda (gelap) | Tren (gelap) |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="docs/screenshots/06-target.png" width="160"> | <img src="docs/screenshots/07-pengingat.png" width="160"> | <img src="docs/screenshots/08-kunci.png" width="160"> | <img src="docs/screenshots/09-beranda-gelap.png" width="160"> | <img src="docs/screenshots/10-tren-gelap.png" width="160"> |
+
+Diambil dari emulator Pixel 7a dengan data contoh tiga minggu. Untuk
+mengambil ulang:
+
+```bash
+flutter drive --driver=test_driver/integration_test.dart \
+  --target=integration_test/screenshots_test.dart -d <emulator>
+```
 
 ## Fitur
 
