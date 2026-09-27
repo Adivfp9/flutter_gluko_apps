@@ -255,6 +255,19 @@ Tanpa ini, semua sprint berikutnya menumpuk utang konfigurasi.
 | 5.7 | Disclaimer medis di Pengaturan → Tentang (teks PRD 10.4, verbatim) · ikon & nama aplikasi final · keystore release + signing config (ganti `signingConfigs.getByName("debug")` yang masih dipakai build release sekarang) |
 | 5.8 | Beta internal via Play Console internal testing + isi Data safety form (deklarasi: tidak ada data yang dikumpulkan/dikirim) |
 
+**Status (27 September 2026)** — langkah manual ada di `docs/RELEASE-CHECKLIST.md`.
+
+| ID | Status | Catatan |
+| --- | --- | --- |
+| 5.1 | ✅ | Audit otomatis 12 layar; temuan diperbaiki (bug layout Beranda, 4 overflow, 2 kontras, keypad 46→50 dp, segmen "Kustom" nonaktif) |
+| 5.2 | ✅ | 12 golden (6 layar × terang/gelap), waktu dipatok via `package:clock`; ketahuan label tombol jatuh ke Roboto → diperbaiki |
+| 5.3 | ✅ | Alur penuh di host + `integration_test/`; menemukan 4 bug (edit menggeser waktu +offset zona, Riwayat tidak refresh setelah edit, hero tag FAB ganda, pill status terpecah) |
+| 5.4 | ◐ | APK arm64 26,4 MB (target 25 MB; .so tidak terkompresi, unduh via Play lebih kecil). Cold start & fps **butuh HP fisik** |
+| 5.5 | ✅ | SchemaVerifier v1, analyze 0, coverage domain 92,8% / data 72,4% (87,7% tanpa adaptor platform & tabel DSL) / total 80,0% |
+| 5.6 | ◐ | Fondasi gen-l10n + ARB id/en, dimigrasi: navigasi, Pengaturan, Tentang. **Sisa ±250 string** di layar lain masih literal Indonesia |
+| 5.7 | ◐ | Disclaimer verbatim (dites terhadap PRD), signing via `key.properties`. **Belum:** nama/ikon final, keystore (milik pemilik) |
+| 5.8 | ◐ | Jawaban Data safety & deklarasi izin disiapkan; unggah ke Play Console dilakukan pemilik |
+
 ### v1.1 (minggu 11–16)
 
 F-11 peringatan ekstrem + kontak darurat · F-12 laporan PDF (`pdf`/`printing`) + ekspor CSV · F-13 TIR & GMI (`3,31 + 0,02392 × rata-rata`, minimal 14 pembacaan per 30 hari) · F-14 log obat/makanan/aktivitas/berat/HbA1c lab (7 tabel baru → `schemaVersion = 2`) · F-15 pengingat obat.
