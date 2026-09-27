@@ -41,14 +41,6 @@ dalam kurang dari 10 detik, lalu melihat polanya.
 | :---: | :---: | :---: | :---: | :---: |
 | <img src="docs/screenshots/06-target.png" width="160"> | <img src="docs/screenshots/07-pengingat.png" width="160"> | <img src="docs/screenshots/08-kunci.png" width="160"> | <img src="docs/screenshots/09-beranda-gelap.png" width="160"> | <img src="docs/screenshots/10-tren-gelap.png" width="160"> |
 
-Diambil dari emulator Pixel 7a dengan data contoh tiga minggu. Untuk
-mengambil ulang:
-
-```bash
-flutter drive --driver=test_driver/integration_test.dart \
-  --target=integration_test/screenshots_test.dart -d <emulator>
-```
-
 ## Fitur
 
 - **Catat** GDP, GDS, atau 2 Jam PP dengan keypad angka. Status (Rendah,
@@ -235,20 +227,6 @@ Selain unit test domain dan Cubit, yang dites:
   batalkan, backup, restore.
 
 Coverage lapisan domain 92,8%, keseluruhan 80%.
-
-## Status
-
-MVP untuk Android sudah selesai. Yang belum:
-
-- Uji di HP fisik: notifikasi setelah restart, sidik jari, dan performa.
-- Terjemahan bahasa Inggris baru mencakup navigasi, Pengaturan, dan
-  Tentang.
-- APK arm64 berukuran 26,3 MB, sedikit di atas target 25 MB.
-- Laporan PDF, ekspor CSV, serta log obat dan makanan direncanakan untuk
-  versi berikutnya.
-
-Rencana kerja ada di [docs/IMPLEMENTATION-PLAN.md](docs/IMPLEMENTATION-PLAN.md),
-kebutuhan produk di [docs/PRD-GlukoTrack.md](docs/PRD-GlukoTrack.md).
 
 ## Disclaimer medis
 
