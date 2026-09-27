@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android 11 ke bawah (Auto Backup).
+  Kunci DB (256-bit) tersimpan di Android Keystore dan TIDAK ikut berpindah
+  perangkat. Kalau file SQLCipher ikut dipulihkan tanpa kuncinya, pengguna
+  mendapat database yang tidak bisa dibuka sama sekali. Jadi seluruh isi
+  aplikasi dikecualikan; jalur pemulihan resmi hanya file .gtbak (F-09).
+-->
+<full-backup-content>
+    <exclude domain="database" path="." />
+    <exclude domain="file" path="." />
+    <exclude domain="sharedpref" path="." />
+</full-backup-content>

@@ -61,7 +61,7 @@ Ini hasil pembandingan PRD ↔ desain ↔ repo. Beberapa di antaranya harus dipu
 `app_theme.dart` memanggil `fontFamily: 'PlusJakartaSans'`, tapi `pubspec.yaml` tidak punya section `fonts`. Paket `google_fonts` **mengunduh font saat runtime** sehingga bentrok langsung dengan NFR-04 (build MVP tanpa permission INTERNET) dan akan fallback silent ke Roboto.
 → **Bundle TTF lokal** di `assets/fonts/` (weight 400/500/600/700/800), jangan `google_fonts`. Sekitar 1,2 MB, masih aman terhadap NFR-10.
 
-**B-2 — Kunci enkripsi file backup belum ditentukan.**
+**B-2 — Kunci enkripsi file backup: SELESAI, passphrase pengguna** (diputuskan 27 September 2026, diimplementasikan di Sprint 4.6).
 PRD hanya menyebut ".gtbak terenkripsi". Bila kuncinya adalah kunci DB dari Android Keystore, file **tidak bisa dipulihkan di HP baru** — padahal itu justru mitigasi risiko "data hilang saat ganti HP" di PRD 10.2. Fitur F-09 akan gagal memenuhi tujuannya sendiri.
 → Kunci backup **diturunkan dari passphrase yang diinput pengguna** (PBKDF2-HMAC-SHA256, ≥ 100k iterasi, salt acak di header) + AES-256-GCM. Header plaintext: `{magic, schema_version, created_at, kdf, salt, iterations}`; checksum SHA-256 atas ciphertext.
 
@@ -77,6 +77,22 @@ Keputusan 26 September 2026: MVP fokus Android, iOS ditunda. Ini menutup pertany
 **B-4 — `ux_fasting_per_day` (unique index) vs alur pilihan GDP ganda.**
 Index menolak insert GDP ke-2 dengan exception, sementara AC menuntut dialog 3 pilihan. Tanpa penanganan, hasilnya crash atau pesan error mentah ke UI.
 → Use case `AddReading` **wajib** cek `fastingOn(date)` sebelum insert dan mengembalikan `Left(DuplicateFastingFailure)` yang di-render sebagai dialog. Index tetap dipertahankan sebagai jaring pengaman. Catatan: alur *restore* dan *undo delete* juga bisa menabrak index ini — tangani sebagai kasus uji eksplisit.
+
+**B-5 — `sqlcipher_flutter_libs` sudah EOL; jalur SQLCipher berubah.** *(ditemukan saat Sprint 0.1, 26 Sep 2026)*
+PRD 7.1 menyebut `sqlcipher_flutter_libs` sebagai paket enkripsi. Rilis terakhirnya adalah `0.7.0+eol` dengan deskripsi resmi *"Not used anymore, update to version 3.x of package:sqlite3 instead"*. Jadi paket itu tidak boleh dipakai untuk proyek baru.
+→ Sejak `sqlite3` 3.x, varian native dipilih lewat **build hook**, bukan paket libs terpisah. Yang dipakai sekarang (sudah masuk `pubspec.yaml`):
+
+```yaml
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlcipher   # alternatif: sqlite3mc
+```
+
+Konsekuensi yang perlu diingat:
+- `sqlite3` dijadikan dependensi **langsung** (bukan transitif dari drift) supaya versi yang dikenai hook terkendali.
+- Tidak perlu `open.overrideFor` — pustaka yang ter-bundle sudah SQLCipher, tinggal `PRAGMA key` setelah open (menyesuaikan tugas 1.3).
+- Build SQLCipher menautkan **OpenSSL** di Android, jadi dampaknya ke NFR-10 (APK ≤ 25 MB) harus diukur, bukan diasumsikan. Bila terlalu besar, `source: sqlite3mc` adalah pengganti yang lebih ramping dan tetap mendukung `PRAGMA key`.
 
 ### 3.2 Desain belum lengkap (perlu dibuat)
 
@@ -141,22 +157,24 @@ lib/
 
 7 tahap: **Sprint 0** (fondasi teknis — tambahan dari PRD, karena repo masih scaffold kosong) + Sprint 1–5 sesuai roadmap PRD + v1.1.
 
-### Sprint 0 — Bootstrap (3–4 hari)
+### Sprint 0 — Bootstrap ✅ SELESAI (26 September 2026)
 
 Tanpa ini, semua sprint berikutnya menumpuk utang konfigurasi.
 
-| ID | Tugas | Output |
-| --- | --- | --- |
-| 0.1 | Tambah dependensi: `flutter_bloc`, `get_it`, `injectable`, `drift`, `sqlcipher_flutter_libs`, `fpdart`, `freezed_annotation`, `json_annotation`, `go_router`, `fl_chart`, `flutter_local_notifications`, `timezone`, `flutter_timezone`, `local_auth`, `flutter_secure_storage`, `share_plus`, `file_picker`, `path_provider`, `crypto`, `cryptography`, `intl`. Dev: `build_runner`, `drift_dev`, `freezed`, `json_serializable`, `injectable_generator`, `very_good_analysis`, `mocktail`, `bloc_test`, `integration_test` | `pubspec.yaml`, `pubspec.lock` |
-| 0.2 | Ganti `analysis_options.yaml` ke `very_good_analysis`; tambah aturan larangan import lintas-layer | analyzer bersih |
-| 0.3 | Bundle font Plus Jakarta Sans (B-1) + daftarkan di `pubspec.yaml` | `assets/fonts/*.ttf` |
-| 0.4 | Config Android: `minSdk = 26`, `applicationId` final, permission `RECEIVE_BOOT_COMPLETED` + `SCHEDULE_EXACT_ALARM` + `USE_BIOMETRIC`, **hapus** permission INTERNET (NFR-04), label aplikasi | `android/app/build.gradle.kts`, `AndroidManifest.xml` |
-| 0.5 | Kecualikan file DB dari Android auto-backup (`android:allowBackup` / `dataExtractionRules` / `backup_rules.xml`) — kunci di Keystore tidak ikut berpindah, jadi DB yang dipulihkan OS akan jadi file rusak (lihat §7) | `AndroidManifest.xml`, `res/xml/backup_rules.xml` |
-| 0.6 | Port `docs/app_theme.dart` → `lib/core/theme/` + token tipe pembacaan + **tema dark** (D-4) | `core/theme/*` |
-| 0.7 | Skeleton `core/error`, `core/usecase`, `core/di`, `core/router`, shell bottom-nav 4 tab | app jalan dengan 4 tab kosong |
-| 0.8 | CI GitHub Actions: `flutter analyze` + `flutter test --coverage` + build APK debug per PR | `.github/workflows/ci.yml` |
+| ID | Status | Tugas | Output nyata |
+| --- | --- | --- | --- |
+| 0.1 | ✅ | Tambah dependensi runtime + dev. **Deviasi:** `sqlcipher_flutter_libs` diganti build hook `sqlite3` (lihat B-5) | `pubspec.yaml`, `pubspec.lock` — 90 + 54 paket ter-resolve |
+| 0.2 | ✅ | `very_good_analysis` 11.0.0, `strict-casts`/`strict-inference`/`strict-raw-types`, `docs/**` dikecualikan. Batas layer ditegakkan lewat test, bukan lint | `analysis_options.yaml`, `test/architecture_test.dart` (4 test) |
+| 0.3 | ✅ | Plus Jakarta Sans statis 5 weight (400–800) + OFL, diunduh dari repo foundry. **652 KB**, bukan ~1,2 MB seperti perkiraan | `assets/fonts/*.ttf` |
+| 0.4 | ✅ | `minSdk = 26`, `applicationId = com.adipurwanto.glukotrack`, label `GlukoTrack`, portrait-only, permission notifikasi/exact-alarm/boot/biometrik. INTERNET tetap hanya di varian debug & profile | `android/app/build.gradle.kts`, `AndroidManifest.xml`, `MainActivity.kt` dipindah paket |
+| 0.5 | ✅ | `allowBackup=false` + aturan cloud-backup & device-transfer dikecualikan | `res/xml/backup_rules.xml`, `res/xml/data_extraction_rules.xml` |
+| 0.6 | ✅ | Palet terang **dan gelap** sebagai `ThemeExtension`, aksen per tipe pengukuran, skala tipografi lengkap dengan tabular figures, spacing/radius/ukuran komponen | `lib/core/theme/` (4 berkas) |
+| 0.7 | ✅ | `core/error` (sealed `Failure`, termasuk `DuplicateFastingFailure` untuk B-4), `core/usecase`, `core/di` (get_it + injectable, config ter-generate), `core/router` (go_router `StatefulShellRoute`), shell 4 tab + 4 halaman placeholder | `lib/core/`, `lib/features/*/presentation/pages/`, `lib/app.dart`, `lib/main.dart` |
+| 0.8 | ✅ | CI dua job: analyze+test (dengan `--fatal-infos` dan artefak coverage) lalu build APK debug | `.github/workflows/ci.yml` |
 
-**Gate:** `flutter analyze` 0 warning · app build & jalan · font tampil benar.
+**Hasil gate:** `flutter analyze --fatal-infos` → **No issues found** · `flutter test` → **7/7 lulus** · `dart format` bersih · build APK debug diverifikasi terpisah.
+
+**Catatan:** repo ini belum berupa git repository, jadi workflow CI baru aktif setelah `git init` + remote GitHub.
 
 ### Sprint 1 (minggu 1–2) — Database, Onboarding, Profil · F-10
 
@@ -164,7 +182,7 @@ Tanpa ini, semua sprint berikutnya menumpuk utang konfigurasi.
 | --- | --- |
 | 1.1 | 6 tabel drift sesuai DDL PRD 8.2, termasuk semua `CHECK`, index parsial, dan `ux_fasting_per_day` |
 | 1.2 | `AppDatabase`: `schemaVersion = 1`, `beforeOpen` (`foreign_keys=ON`, `journal_mode=WAL`), `onCreate` seed (3 baris `target_ranges` + pengingat puasa 06.00) |
-| 1.3 | Integrasi SQLCipher: kunci acak 256-bit dibuat sekali, disimpan di `flutter_secure_storage`, `PRAGMA key` via `open.overrideFor` |
+| 1.3 | Integrasi SQLCipher (lihat B-5): kunci acak 256-bit dibuat sekali, disimpan di `flutter_secure_storage`, lalu `PRAGMA key` di `beforeOpen`. Tidak perlu `open.overrideFor` karena pustaka ter-bundle sudah varian SQLCipher |
 | 1.4 | Setup `drift_dev schema dump` + `SchemaVerifier` (fondasi migration test) |
 | 1.5 | DAO + entity + mapper + repository untuk `profile`, `target`, `settings` |
 | 1.6 | Domain: `CompleteOnboarding`, `GetProfile`, `UpdateProfile`, `ApplyPreset` (jenis diabetes → preset, aturan PRD 5.1) |
@@ -218,6 +236,12 @@ Tanpa ini, semua sprint berikutnya menumpuk utang konfigurasi.
 
 **Gate:** notifikasi hidup setelah reboot di perangkat fisik · backup → wipe → restore menghasilkan data identik · lupa-PIN punya jalan keluar.
 
+**Status (27 September 2026):** 4.1–4.8 terimplementasi dan ter-commit, 207 test lolos, `flutter analyze` bersih, APK debug ter-build.
+- Gate "backup → wipe → restore identik" dan "lupa-PIN punya jalan keluar" dibuktikan lewat test otomatis (`test/features/backup/backup_test.dart`, `test/features/security/`).
+- Gate "notifikasi hidup setelah reboot" **belum diverifikasi**: butuh perangkat fisik. Receiver boot sudah terdaftar di manifest dan notifikasi dijadwalkan sebagai pengulangan mingguan.
+- Catatan desain: pengingat puasa "dilewati" dengan menggeser kemunculan pertama ke minggu berikutnya; `ReminderSync` merekonsiliasi jadwal saat pengingat berubah, GDP hari ini tersimpan/dihapus, dan aplikasi kembali ke depan.
+- Format `.gtbak`: `GTBAK\x01` + header JSON plaintext + AES-256-GCM (PBKDF2-HMAC-SHA256 200k iterasi); isinya dump logis per tabel ter-gzip. Setelan terikat perangkat (status kunci, penghitung PIN, `last_backup_at`) tidak ikut backup.
+
 ### Sprint 5 (minggu 9–10) — Pengerasan & Rilis MVP
 
 | ID | Tugas |
@@ -230,6 +254,19 @@ Tanpa ini, semua sprint berikutnya menumpuk utang konfigurasi.
 | 5.6 | Lokalisasi: ekstrak semua string ke `gen-l10n` (ID default, EN siap), format angka/tanggal `id_ID` |
 | 5.7 | Disclaimer medis di Pengaturan → Tentang (teks PRD 10.4, verbatim) · ikon & nama aplikasi final · keystore release + signing config (ganti `signingConfigs.getByName("debug")` yang masih dipakai build release sekarang) |
 | 5.8 | Beta internal via Play Console internal testing + isi Data safety form (deklarasi: tidak ada data yang dikumpulkan/dikirim) |
+
+**Status (27 September 2026)** — langkah manual ada di `docs/RELEASE-CHECKLIST.md`.
+
+| ID | Status | Catatan |
+| --- | --- | --- |
+| 5.1 | ✅ | Audit otomatis 12 layar; temuan diperbaiki (bug layout Beranda, 4 overflow, 2 kontras, keypad 46→50 dp, segmen "Kustom" nonaktif) |
+| 5.2 | ✅ | 12 golden (6 layar × terang/gelap), waktu dipatok via `package:clock`; ketahuan label tombol jatuh ke Roboto → diperbaiki |
+| 5.3 | ✅ | Alur penuh di host + `integration_test/`; menemukan 4 bug (edit menggeser waktu +offset zona, Riwayat tidak refresh setelah edit, hero tag FAB ganda, pill status terpecah) |
+| 5.4 | ◐ | APK arm64 26,4 MB (target 25 MB; .so tidak terkompresi, unduh via Play lebih kecil). Cold start & fps **butuh HP fisik** |
+| 5.5 | ✅ | SchemaVerifier v1, analyze 0, coverage domain 92,8% / data 72,4% (87,7% tanpa adaptor platform & tabel DSL) / total 80,0% |
+| 5.6 | ◐ | Fondasi gen-l10n + ARB id/en, dimigrasi: navigasi, Pengaturan, Tentang. **Sisa ±250 string** di layar lain masih literal Indonesia |
+| 5.7 | ◐ | Disclaimer verbatim (dites terhadap PRD), signing via `key.properties`. **Belum:** nama/ikon final, keystore (milik pemilik) |
+| 5.8 | ◐ | Jawaban Data safety & deklarasi izin disiapkan; unggah ke Play Console dilakukan pemilik |
 
 ### v1.1 (minggu 11–16)
 
@@ -271,8 +308,8 @@ Ditunda per keputusan B-3, bukan dibatalkan. Ruang lingkupnya kelak: `flutter cr
 ## 8. Yang Perlu Diputuskan
 
 - [x] ~~**B-3** MVP Android saja, atau Android + iOS?~~ → **Android saja**, diputuskan 26 September 2026. iOS jadi item pasca-MVP.
-- [ ] **B-2** Setuju backup memakai passphrase pengguna (bisa dipulihkan di HP baru) alih-alih kunci Keystore?
-- [ ] **B-1** Bundle TTF Plus Jakarta Sans lokal — file fontnya disiapkan sendiri atau perlu diunduh dulu?
+- [x] ~~**B-2** Setuju backup memakai passphrase pengguna (bisa dipulihkan di HP baru) alih-alih kunci Keystore?~~ → **passphrase pengguna**, diputuskan 27 September 2026.
+- [x] ~~**B-1** Bundle TTF Plus Jakarta Sans lokal~~ → **selesai di Sprint 0.3**: 5 weight statis (400/500/600/700/800) + OFL diambil dari repo foundry `tokotype/PlusJakartaSans`, total 652 KB, terdaftar di `pubspec.yaml`. `google_fonts` tidak dipakai.
 - [ ] Tipe "2 Jam PP" masuk MVP atau ditunda? (PRD 10.3 masih terbuka; desain sudah memuatnya di 3 layar, jadi rekomendasi: **masuk MVP**)
-- [ ] Nama aplikasi final + `applicationId` (saat ini masih `com.example.flutter_gluko_apps`)
+- [ ] Nama aplikasi final. Sprint 0.4 memakai **`com.adipurwanto.glukotrack`** dan label **GlukoTrack** sebagai nilai kerja — mudah diganti sekarang, **tidak bisa** diganti setelah rilis pertama ke Play (applicationId permanen), jadi konfirmasikan sebelum Sprint 5.8.
 - [ ] **D-1/D-2/D-3** Layar Pengaturan, Kalender, Splash/Kunci, Detail: diturunkan dari bahasa visual yang ada, atau didesain dulu?

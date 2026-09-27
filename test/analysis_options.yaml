@@ -1,0 +1,11 @@
+# Lint khusus berkas test.
+#
+# Di test, menyebut nilai secara eksplisit justru memperjelas maksud kasus uji
+# ("localDate: '2026-09-26'" menerangkan skenario, walau kebetulan sama dengan
+# default fixture). Karena itu satu aturan dimatikan di sini saja, bukan di
+# seluruh proyek.
+include: ../analysis_options.yaml
+
+linter:
+  rules:
+    avoid_redundant_argument_values: false
