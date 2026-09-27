@@ -7,6 +7,10 @@ import 'package:flutter_gluko_apps/features/glucose/domain/usecases/watch_dashbo
 import 'package:flutter_gluko_apps/features/glucose/presentation/cubit/dashboard_cubit.dart';
 import 'package:flutter_gluko_apps/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:flutter_gluko_apps/features/profile/domain/repositories/profile_repository.dart';
+import 'package:flutter_gluko_apps/features/target/data/repositories/target_repository_impl.dart';
+import 'package:flutter_gluko_apps/features/target/domain/repositories/target_repository.dart';
+import 'package:flutter_gluko_apps/features/trend/domain/usecases/build_trend_summary.dart';
+import 'package:flutter_gluko_apps/features/trend/presentation/cubit/trend_cubit.dart';
 
 import 'test_database.dart';
 
@@ -22,6 +26,7 @@ AppDatabase configureTestDependencies() {
     ..registerSingleton<AppDatabase>(db)
     ..registerSingleton<GlucoseRepository>(GlucoseRepositoryImpl(db.glucoseDao))
     ..registerSingleton<ProfileRepository>(ProfileRepositoryImpl(db.profileDao))
+    ..registerSingleton<TargetRepository>(TargetRepositoryImpl(db.targetDao))
     ..registerFactory<DashboardCubit>(
       () => DashboardCubit(
         WatchDashboard(
@@ -29,6 +34,14 @@ AppDatabase configureTestDependencies() {
           const BuildDashboardSummary(),
         ),
         getIt<ProfileRepository>(),
+      ),
+    )
+    ..registerFactory<TrendCubit>(
+      () => TrendCubit(
+        getIt<GlucoseRepository>(),
+        getIt<TargetRepository>(),
+        getIt<ProfileRepository>(),
+        const BuildTrendSummary(),
       ),
     );
 

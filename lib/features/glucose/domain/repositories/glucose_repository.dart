@@ -33,6 +33,12 @@ abstract interface class GlucoseRepository {
     int offset,
   });
 
+  /// Seluruh pembacaan aktif pada rentang tanggal lokal, untuk grafik tren.
+  Stream<List<GlucoseReading>> watchReadingsBetween({
+    required String fromLocalDate,
+    required String toLocalDate,
+  });
+
   Stream<GlucoseReading?> watchById(int id);
 
   /// Status terburuk per tanggal untuk tampilan kalender (PRD F-05 AC4).

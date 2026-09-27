@@ -75,6 +75,10 @@ import 'package:flutter_gluko_apps/features/target/domain/usecases/save_targets.
     as _i521;
 import 'package:flutter_gluko_apps/features/target/presentation/cubit/target_settings_cubit.dart'
     as _i539;
+import 'package:flutter_gluko_apps/features/trend/domain/usecases/build_trend_summary.dart'
+    as _i546;
+import 'package:flutter_gluko_apps/features/trend/presentation/cubit/trend_cubit.dart'
+    as _i460;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
@@ -91,6 +95,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => const _i239.BuildDashboardSummary(),
     );
     gh.factory<_i725.ClassifyReading>(() => const _i725.ClassifyReading());
+    gh.factory<_i546.BuildTrendSummary>(() => const _i546.BuildTrendSummary());
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => databaseModule.secureStorage,
     );
@@ -209,6 +214,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i94.DashboardCubit(
         gh<_i39.WatchDashboard>(),
         gh<_i525.ProfileRepository>(),
+      ),
+    );
+    gh.factory<_i460.TrendCubit>(
+      () => _i460.TrendCubit(
+        gh<_i848.GlucoseRepository>(),
+        gh<_i634.TargetRepository>(),
+        gh<_i525.ProfileRepository>(),
+        gh<_i546.BuildTrendSummary>(),
       ),
     );
     gh.factory<_i539.TargetSettingsCubit>(

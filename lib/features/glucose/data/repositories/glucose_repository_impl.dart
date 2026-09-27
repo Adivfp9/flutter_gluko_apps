@@ -160,6 +160,22 @@ class GlucoseRepositoryImpl implements GlucoseRepository {
   }
 
   @override
+  Stream<List<GlucoseReading>> watchReadingsBetween({
+    required String fromLocalDate,
+    required String toLocalDate,
+  }) => _dao
+      .watchReadingsBetween(
+        fromLocalDate: fromLocalDate,
+        toLocalDate: toLocalDate,
+      )
+      .map(
+        (rows) => [
+          for (final row in rows)
+            _toEntity(ReadingWithSymptoms(row, const <String>[])),
+        ],
+      );
+
+  @override
   Stream<GlucoseReading?> watchById(int id) => _dao
       .watchById(id)
       .map((value) => value == null ? null : _toEntity(value));

@@ -64,10 +64,17 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.textContaining('Grafik 7/14/30/90 hari'),
+        find.text('Belum ada data pada periode ini'),
         findsOneWidget,
         reason: 'Tab Tren harus menampilkan isi layar Tren',
       );
+      expect(find.text('14 hari'), findsOneWidget);
+
+      // Melepas pohon widget di dalam test: drift menjadwalkan timer saat
+      // stream query terakhir dibatalkan, dan timer itu harus sempat jalan.
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump(const Duration(milliseconds: 1));
+      await tester.pump(const Duration(milliseconds: 1));
     });
 
     testWidgets('tema gelap memakai latar gelap', (tester) async {
