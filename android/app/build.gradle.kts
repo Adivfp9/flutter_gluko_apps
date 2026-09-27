@@ -1,8 +1,17 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("key.properties")
+    if (file.exists()) FileInputStream(file).use { load(it) }
+}
+val hasReleaseKey = keystoreProperties.getProperty("storeFile") != null
 
 android {
     namespace = "com.adipurwanto.glukotrack"
@@ -29,11 +38,36 @@ android {
         versionName = flutter.versionName
     }
 
+    // Rencana 5.7: kunci rilis dibaca dari android/key.properties (tidak
+    // di-commit, lihat android/.gitignore). Format:
+    //   storeFile=../upload-keystore.jks   (relatif ke android/app/)
+    //   storePassword=...
+    //   keyAlias=upload
+    //   keyPassword=...
+    signingConfigs {
+        create("release") {
+            if (hasReleaseKey) {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO(sprint-5.7): ganti dengan keystore rilis sebelum publikasi.
-            // Saat ini masih memakai kunci debug agar `flutter run --release` jalan.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (hasReleaseKey) {
+                signingConfigs.getByName("release")
+            } else {
+                // Build rilis lokal/CI tanpa keystore tetap bisa jalan, tetapi
+                // artefaknya TIDAK boleh diunggah ke Play Console.
+                logger.warn(
+                    "GlukoTrack: android/key.properties tidak ada — build rilis " +
+                        "ditandatangani kunci DEBUG. Jangan unggah ke Play.",
+                )
+                signingConfigs.getByName("debug")
+            }
         }
     }
 

@@ -47,6 +47,7 @@ void main() {
     'Pengingat': '/pengaturan/pengingat',
     'Keamanan': '/pengaturan/keamanan',
     'Backup': '/pengaturan/backup',
+    'Tentang': '/pengaturan/tentang',
     'Form catat': '/catat?type=fasting',
     'Onboarding': '/onboarding',
   };

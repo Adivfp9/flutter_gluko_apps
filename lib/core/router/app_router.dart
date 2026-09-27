@@ -11,6 +11,7 @@ import 'package:flutter_gluko_apps/features/onboarding/presentation/pages/onboar
 import 'package:flutter_gluko_apps/features/reminder/domain/usecases/reminder_sync.dart';
 import 'package:flutter_gluko_apps/features/reminder/presentation/pages/reminders_page.dart';
 import 'package:flutter_gluko_apps/features/security/presentation/pages/security_settings_page.dart';
+import 'package:flutter_gluko_apps/features/settings/presentation/pages/about_page.dart';
 import 'package:flutter_gluko_apps/features/settings/presentation/pages/settings_page.dart';
 import 'package:flutter_gluko_apps/features/startup/presentation/pages/splash_page.dart';
 import 'package:flutter_gluko_apps/features/target/presentation/pages/target_settings_page.dart';
@@ -35,6 +36,7 @@ abstract final class AppRoute {
   static const String reminders = 'reminders';
   static const String security = 'security';
   static const String backup = 'backup';
+  static const String about = 'about';
 
   /// Pulihkan backup dari onboarding (HP baru), di luar shell tab.
   static const String restore = 'restore';
@@ -157,6 +159,11 @@ GoRouter createRouter({String initialLocation = '/'}) {
                     path: 'backup',
                     name: AppRoute.backup,
                     builder: (context, state) => const BackupPage(),
+                  ),
+                  GoRoute(
+                    path: 'tentang',
+                    name: AppRoute.about,
+                    builder: (context, state) => const AboutPage(),
                   ),
                 ],
               ),

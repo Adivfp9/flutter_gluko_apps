@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gluko_apps/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 /// Rangka navigasi bawah 4 tab (PRD 6.3).
@@ -11,26 +12,26 @@ class AppShell extends StatelessWidget {
 
   final StatefulNavigationShell navigationShell;
 
-  static const _destinations = <NavigationDestination>[
+  List<NavigationDestination> _destinations(AppLocalizations l10n) => [
     NavigationDestination(
-      icon: Icon(Icons.home_outlined),
-      selectedIcon: Icon(Icons.home),
-      label: 'Beranda',
+      icon: const Icon(Icons.home_outlined),
+      selectedIcon: const Icon(Icons.home),
+      label: l10n.navHome,
     ),
     NavigationDestination(
-      icon: Icon(Icons.access_time_outlined),
-      selectedIcon: Icon(Icons.access_time_filled),
-      label: 'Riwayat',
+      icon: const Icon(Icons.access_time_outlined),
+      selectedIcon: const Icon(Icons.access_time_filled),
+      label: l10n.navHistory,
     ),
     NavigationDestination(
-      icon: Icon(Icons.show_chart_outlined),
-      selectedIcon: Icon(Icons.show_chart),
-      label: 'Tren',
+      icon: const Icon(Icons.show_chart_outlined),
+      selectedIcon: const Icon(Icons.show_chart),
+      label: l10n.navTrend,
     ),
     NavigationDestination(
-      icon: Icon(Icons.tune_outlined),
-      selectedIcon: Icon(Icons.tune),
-      label: 'Setelan',
+      icon: const Icon(Icons.tune_outlined),
+      selectedIcon: const Icon(Icons.tune),
+      label: l10n.navSettings,
     ),
   ];
 
@@ -50,7 +51,7 @@ class AppShell extends StatelessWidget {
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: _onTap,
-        destinations: _destinations,
+        destinations: _destinations(context.l10n),
       ),
     );
   }

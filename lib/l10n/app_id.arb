@@ -1,0 +1,36 @@
+{
+  "@@locale": "id",
+
+  "navHome": "Beranda",
+  "@navHome": { "description": "Tab navigasi bawah: beranda/dashboard." },
+  "navHistory": "Riwayat",
+  "navTrend": "Tren",
+  "navSettings": "Setelan",
+  "@navSettings": { "description": "Tab navigasi bawah; label pendek sesuai desain." },
+
+  "settingsTitle": "Pengaturan",
+  "settingsSectionMonitoring": "Pemantauan",
+  "settingsSectionData": "Data",
+  "settingsTargetTitle": "Target & satuan",
+  "settingsTargetSubtitle": "Atur rentang GDP, GDS, 2 Jam PP, serta mg/dL atau mmol/L.",
+  "settingsRemindersTitle": "Pengingat",
+  "settingsRemindersSubtitle": "Jadwal cek gula darah harian.",
+  "settingsSecurityTitle": "Keamanan",
+  "settingsSecuritySubtitle": "PIN dan biometrik.",
+  "settingsBackupTitle": "Backup & restore",
+  "settingsBackupLoading": "Memuat…",
+  "settingsBackupNever": "Belum pernah backup. Buat sekarang agar data aman.",
+  "settingsBackupLast": "Terakhir {date}",
+  "@settingsBackupLast": { "placeholders": { "date": { "type": "String" } } },
+  "settingsBackupStale": "Terakhir {date} — sudah lebih dari 30 hari.",
+  "@settingsBackupStale": { "placeholders": { "date": { "type": "String" } } },
+  "settingsAboutTitle": "Tentang GlukoTrack",
+  "settingsAboutSubtitle": "Disclaimer medis dan privasi.",
+
+  "aboutTagline": "Catatan gula darah pribadi",
+  "aboutDisclaimerTitle": "Disclaimer medis",
+  "aboutDisclaimer": "GlukoTrack adalah alat bantu pencatatan gula darah pribadi, bukan alat diagnosis maupun pengganti nasihat tenaga kesehatan. Target dan klasifikasi di aplikasi ini bersifat umum. Konsultasikan target pribadi, pengobatan, dan setiap perubahan terapi dengan dokter Anda. Bila Anda mengalami gejala gula darah sangat rendah atau sangat tinggi, segera cari pertolongan medis.",
+  "@aboutDisclaimer": { "description": "PRD 10.4, verbatim. Jangan diubah tanpa persetujuan pemilik produk." },
+  "aboutPrivacyTitle": "Privasi",
+  "aboutPrivacyBody": "Semua catatan tersimpan terenkripsi hanya di HP ini. GlukoTrack tidak memiliki akun, tidak mengirim data ke server, dan tidak meminta izin internet."
+}

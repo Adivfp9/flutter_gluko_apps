@@ -1,0 +1,31 @@
+{
+  "@@locale": "en",
+
+  "navHome": "Home",
+  "navHistory": "History",
+  "navTrend": "Trends",
+  "navSettings": "Settings",
+
+  "settingsTitle": "Settings",
+  "settingsSectionMonitoring": "Monitoring",
+  "settingsSectionData": "Data",
+  "settingsTargetTitle": "Targets & units",
+  "settingsTargetSubtitle": "Set fasting, random, and 2-hour post-meal ranges, and mg/dL or mmol/L.",
+  "settingsRemindersTitle": "Reminders",
+  "settingsRemindersSubtitle": "Daily blood sugar check schedule.",
+  "settingsSecurityTitle": "Security",
+  "settingsSecuritySubtitle": "PIN and biometrics.",
+  "settingsBackupTitle": "Backup & restore",
+  "settingsBackupLoading": "Loading…",
+  "settingsBackupNever": "Never backed up. Create one now to keep your data safe.",
+  "settingsBackupLast": "Last backup {date}",
+  "settingsBackupStale": "Last backup {date} — more than 30 days ago.",
+  "settingsAboutTitle": "About GlukoTrack",
+  "settingsAboutSubtitle": "Medical disclaimer and privacy.",
+
+  "aboutTagline": "Personal blood sugar log",
+  "aboutDisclaimerTitle": "Medical disclaimer",
+  "aboutDisclaimer": "GlukoTrack is a personal blood sugar logging aid. It is not a diagnostic tool and does not replace advice from a healthcare professional. Targets and classifications in this app are general. Discuss your personal targets, medication, and any change in therapy with your doctor. If you have symptoms of very low or very high blood sugar, seek medical help immediately.",
+  "aboutPrivacyTitle": "Privacy",
+  "aboutPrivacyBody": "All records are stored encrypted on this phone only. GlukoTrack has no accounts, sends no data to any server, and does not request internet access."
+}

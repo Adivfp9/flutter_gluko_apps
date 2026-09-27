@@ -5,6 +5,7 @@ import 'package:flutter_gluko_apps/core/router/app_router.dart';
 import 'package:flutter_gluko_apps/core/theme/app_spacing.dart';
 import 'package:flutter_gluko_apps/features/backup/domain/backup_service.dart';
 import 'package:flutter_gluko_apps/features/backup/presentation/pages/backup_page.dart';
+import 'package:flutter_gluko_apps/l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 
 /// S-09 Pengaturan.
@@ -18,42 +19,41 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final titleStyle = Theme.of(context).textTheme.titleSmall;
+    final l10n = context.l10n;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pengaturan')),
+      appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.screenGutter,
           vertical: AppSpacing.sm,
         ),
         children: [
-          Text('Pemantauan', style: titleStyle),
+          Text(l10n.settingsSectionMonitoring, style: titleStyle),
           const SizedBox(height: AppSpacing.sm),
           Card(
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.tune),
-                  title: const Text('Target & satuan'),
-                  subtitle: const Text(
-                    'Atur rentang GDP, GDS, 2 Jam PP, serta mg/dL atau mmol/L.',
-                  ),
+                  title: Text(l10n.settingsTargetTitle),
+                  subtitle: Text(l10n.settingsTargetSubtitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.pushNamed(AppRoute.target),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.notifications_outlined),
-                  title: const Text('Pengingat'),
-                  subtitle: const Text('Jadwal cek gula darah harian.'),
+                  title: Text(l10n.settingsRemindersTitle),
+                  subtitle: Text(l10n.settingsRemindersSubtitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.pushNamed(AppRoute.reminders),
                 ),
                 const Divider(height: 1),
                 ListTile(
                   leading: const Icon(Icons.lock_outline),
-                  title: const Text('Keamanan'),
-                  subtitle: const Text('PIN dan biometrik.'),
+                  title: Text(l10n.settingsSecurityTitle),
+                  subtitle: Text(l10n.settingsSecuritySubtitle),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.pushNamed(AppRoute.security),
                 ),
@@ -61,16 +61,17 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.xl),
-          Text('Data', style: titleStyle),
+          Text(l10n.settingsSectionData, style: titleStyle),
           const SizedBox(height: AppSpacing.sm),
           const _BackupTile(),
           const SizedBox(height: AppSpacing.xl),
-          const ListTile(
-            leading: Icon(Icons.info_outline),
-            title: Text('Tentang GlukoTrack'),
-            subtitle: Text(
-              'Alat pencatatan pribadi, bukan pengganti diagnosis atau '
-              'nasihat dokter.',
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.info_outline),
+              title: Text(l10n.settingsAboutTitle),
+              subtitle: Text(l10n.settingsAboutSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.pushNamed(AppRoute.about),
             ),
           ),
         ],
@@ -93,6 +94,8 @@ class _BackupTileState extends State<_BackupTile> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
+
     return StreamBuilder<DateTime?>(
       stream: _lastBackup,
       builder: (context, snapshot) {
@@ -107,16 +110,15 @@ class _BackupTileState extends State<_BackupTile> {
             leading: Icon(
               nudge ? Icons.warning_amber_rounded : Icons.backup_outlined,
             ),
-            title: const Text('Backup & restore'),
+            title: Text(l10n.settingsBackupTitle),
             subtitle: Text(
               !loaded
-                  ? 'Memuat…'
+                  ? l10n.settingsBackupLoading
                   : last == null
-                  ? 'Belum pernah backup. Buat sekarang agar data aman.'
+                  ? l10n.settingsBackupNever
                   : nudge
-                  ? 'Terakhir ${formatBackupDate(last)} — sudah lebih dari '
-                        '30 hari.'
-                  : 'Terakhir ${formatBackupDate(last)}',
+                  ? l10n.settingsBackupStale(formatBackupDate(last))
+                  : l10n.settingsBackupLast(formatBackupDate(last)),
             ),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.pushNamed(AppRoute.backup),

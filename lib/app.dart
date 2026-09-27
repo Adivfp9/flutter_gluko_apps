@@ -9,7 +9,7 @@ import 'package:flutter_gluko_apps/core/theme/app_theme.dart';
 import 'package:flutter_gluko_apps/features/security/presentation/cubit/app_lock_cubit.dart';
 import 'package:flutter_gluko_apps/features/security/presentation/cubit/app_lock_state.dart';
 import 'package:flutter_gluko_apps/features/security/presentation/pages/lock_screen.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gluko_apps/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 class GlukoTrackApp extends StatefulWidget {
@@ -77,14 +77,12 @@ class _GlukoTrackAppState extends State<GlukoTrackApp> {
       routerConfig: _router,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      // NFR-09: Bahasa Indonesia default, English disiapkan di Sprint 5.6.
+      // NFR-09: Bahasa Indonesia default. String aplikasi dari gen-l10n
+      // (lib/l10n/*.arb, Sprint 5.6); English sudah tersedia sebagai ARB
+      // kedua dan tinggal diaktifkan dengan melepas `locale` tetap ini.
       locale: const Locale('id'),
-      supportedLocales: const [Locale('id'), Locale('en')],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       builder: widget.appLock == null
           ? null
           : (context, child) => _LockGate(
