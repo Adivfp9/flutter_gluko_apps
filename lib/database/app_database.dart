@@ -22,6 +22,8 @@ abstract final class SettingKeys {
   static const String pinHash = 'pin_hash';
   static const String pinSalt = 'pin_salt';
   static const String biometricEnabled = 'biometric_enabled';
+  static const String pinFailedAttempts = 'pin_failed_attempts';
+  static const String pinLockedUntil = 'pin_locked_until';
   static const String lastPurgeAt = 'last_purge_at';
   static const String themeMode = 'theme_mode';
 }
@@ -114,6 +116,23 @@ class AppDatabase extends _$AppDatabase {
       );
     });
   }
+
+  /// Mengosongkan seluruh data lalu mengisi ulang seed bawaan, seperti
+  /// aplikasi yang baru dipasang.
+  ///
+  /// Satu-satunya jalan keluar bila pengguna lupa PIN (PRD F-08): PIN tidak
+  /// bisa dipulihkan, jadi datanya dikorbankan — dengan konfirmasi eksplisit
+  /// di UI dan saran memulihkan dari file `.gtbak`.
+  Future<void> wipeAllData() => transaction(() async {
+    // Anak dulu, baru induk, agar foreign key tidak menolak.
+    await delete(readingSymptomsTable).go();
+    await delete(glucoseReadingsTable).go();
+    await delete(remindersTable).go();
+    await delete(targetRangesTable).go();
+    await delete(userProfileTable).go();
+    await delete(appSettingsTable).go();
+    await _seedDefaults();
+  });
 
   /// PRD 8.4: hapus permanen baris yang sudah di-soft delete lebih dari
   /// [retentionDays] hari. Dipanggil saat aplikasi dibuka.

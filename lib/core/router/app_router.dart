@@ -7,6 +7,7 @@ import 'package:flutter_gluko_apps/features/glucose/presentation/pages/reading_d
 import 'package:flutter_gluko_apps/features/glucose/presentation/pages/reading_form_page.dart';
 import 'package:flutter_gluko_apps/features/onboarding/presentation/pages/onboarding_page.dart';
 import 'package:flutter_gluko_apps/features/reminder/presentation/pages/reminders_page.dart';
+import 'package:flutter_gluko_apps/features/security/presentation/pages/security_settings_page.dart';
 import 'package:flutter_gluko_apps/features/settings/presentation/pages/settings_page.dart';
 import 'package:flutter_gluko_apps/features/startup/presentation/pages/splash_page.dart';
 import 'package:flutter_gluko_apps/features/target/presentation/pages/target_settings_page.dart';
@@ -29,6 +30,7 @@ abstract final class AppRoute {
   static const String onboarding = 'onboarding';
   static const String target = 'target';
   static const String reminders = 'reminders';
+  static const String security = 'security';
 }
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -126,6 +128,11 @@ GoRouter createRouter({String initialLocation = '/'}) {
                     path: 'pengingat',
                     name: AppRoute.reminders,
                     builder: (context, state) => const RemindersPage(),
+                  ),
+                  GoRoute(
+                    path: 'keamanan',
+                    name: AppRoute.security,
+                    builder: (context, state) => const SecuritySettingsPage(),
                   ),
                 ],
               ),

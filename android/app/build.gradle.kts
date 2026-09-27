@@ -58,4 +58,6 @@ flutter {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    // Tema Theme.AppCompat di styles.xml (syarat BiometricPrompt local_auth).
+    implementation("androidx.appcompat:appcompat:1.7.1")
 }

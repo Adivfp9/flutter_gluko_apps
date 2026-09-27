@@ -1,13 +1,24 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gluko_apps/core/router/app_router.dart';
+import 'package:flutter_gluko_apps/core/theme/app_palette.dart';
 import 'package:flutter_gluko_apps/core/theme/app_theme.dart';
+import 'package:flutter_gluko_apps/features/security/presentation/cubit/app_lock_cubit.dart';
+import 'package:flutter_gluko_apps/features/security/presentation/cubit/app_lock_state.dart';
+import 'package:flutter_gluko_apps/features/security/presentation/pages/lock_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 class GlukoTrackApp extends StatefulWidget {
-  const new({super.key, this.router, this.notificationTaps, this.onResumed});
+  const new({
+    super.key,
+    this.router,
+    this.notificationTaps,
+    this.onResumed,
+    this.appLock,
+  });
 
   /// Router siap pakai untuk test widget; produksi memakai [createRouter].
   final GoRouter? router;
@@ -19,6 +30,10 @@ class GlukoTrackApp extends StatefulWidget {
   /// Dipanggil setiap aplikasi kembali ke depan.
   final VoidCallback? onResumed;
 
+  /// Kunci aplikasi (PRD F-08). `null` di test widget yang tidak menguji
+  /// kunci, sehingga tidak perlu menyiapkan Keystore dan biometrik.
+  final AppLockCubit? appLock;
+
   @override
   State<GlukoTrackApp> createState() => _GlukoTrackAppState();
 }
@@ -29,28 +44,33 @@ class _GlukoTrackAppState extends State<GlukoTrackApp> {
   late final GoRouter _router = widget.router ?? createRouter();
 
   StreamSubscription<String>? _tapSub;
-  AppLifecycleListener? _lifecycle;
+  late final AppLifecycleListener _lifecycle;
 
   @override
   void initState() {
     super.initState();
-    _tapSub = widget.notificationTaps?.listen(_router.push);
-    final onResumed = widget.onResumed;
-    if (onResumed != null) {
-      _lifecycle = AppLifecycleListener(onResume: onResumed);
-    }
+    _tapSub = widget.notificationTaps?.listen(
+      (location) => unawaited(_router.push(location)),
+    );
+    _lifecycle = AppLifecycleListener(
+      onPause: () => widget.appLock?.onBackgrounded(DateTime.now()),
+      onResume: () {
+        widget.appLock?.onForegrounded(DateTime.now());
+        widget.onResumed?.call();
+      },
+    );
   }
 
   @override
   void dispose() {
     unawaited(_tapSub?.cancel());
-    _lifecycle?.dispose();
+    _lifecycle.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    final app = MaterialApp.router(
       title: 'GlukoTrack',
       debugShowCheckedModeBanner: false,
       routerConfig: _router,
@@ -64,6 +84,59 @@ class _GlukoTrackAppState extends State<GlukoTrackApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      builder: widget.appLock == null
+          ? null
+          : (context, child) => _LockGate(
+              onReset: () => _router.goNamed(AppRoute.onboarding),
+              child: child ?? const SizedBox.shrink(),
+            ),
+    );
+
+    final lock = widget.appLock;
+    return lock == null ? app : BlocProvider.value(value: lock, child: app);
+  }
+}
+
+/// Menutupi seluruh rute dengan layar kunci selama terkunci.
+///
+/// Layar kunci diletakkan di atas Navigator router (bukan sebagai rute)
+/// supaya tidak bisa dilewati dengan tombol kembali atau deep link.
+class _LockGate extends StatelessWidget {
+  const new({required this.child, required this.onReset});
+
+  final Widget child;
+  final VoidCallback onReset;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AppLockCubit, AppLockState>(
+      listenWhen: (a, b) => !a.resetDone && b.resetDone,
+      listener: (context, state) {
+        onReset();
+        context.read<AppLockCubit>().acknowledgeReset();
+      },
+      buildWhen: (a, b) => a.status != b.status,
+      builder: (context, state) => Stack(
+        children: [
+          // Isi aplikasi tetap terpasang agar posisi navigasi tidak hilang,
+          // tetapi disembunyikan dari pembaca layar selama terkunci.
+          ExcludeSemantics(
+            excluding: state.status != LockStatus.unlocked,
+            child: child,
+          ),
+          if (state.status == LockStatus.checking)
+            Positioned.fill(child: ColoredBox(color: context.palette.surface)),
+          if (state.status == LockStatus.locked)
+            Positioned.fill(
+              // Navigator sendiri: dialog "Lupa PIN" butuh Navigator dan
+              // Overlay, sementara widget ini berada di atas Navigator router.
+              child: Navigator(
+                onGenerateRoute: (_) =>
+                    MaterialPageRoute<void>(builder: (_) => const LockScreen()),
+              ),
+            ),
+        ],
+      ),
     );
   }
 }

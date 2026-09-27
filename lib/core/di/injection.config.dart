@@ -71,6 +71,20 @@ import 'package:flutter_gluko_apps/features/reminder/domain/usecases/reminder_sy
     as _i20;
 import 'package:flutter_gluko_apps/features/reminder/presentation/cubit/reminders_cubit.dart'
     as _i837;
+import 'package:flutter_gluko_apps/features/security/data/repositories/security_repository_impl.dart'
+    as _i729;
+import 'package:flutter_gluko_apps/features/security/data/services/platform_security_services.dart'
+    as _i321;
+import 'package:flutter_gluko_apps/features/security/domain/repositories/security_repository.dart'
+    as _i1054;
+import 'package:flutter_gluko_apps/features/security/domain/services/pin_hasher.dart'
+    as _i593;
+import 'package:flutter_gluko_apps/features/security/domain/services/security_services.dart'
+    as _i474;
+import 'package:flutter_gluko_apps/features/security/domain/usecases/reset_app_data.dart'
+    as _i210;
+import 'package:flutter_gluko_apps/features/security/presentation/cubit/app_lock_cubit.dart'
+    as _i432;
 import 'package:flutter_gluko_apps/features/startup/domain/usecases/app_startup.dart'
     as _i391;
 import 'package:flutter_gluko_apps/features/target/data/repositories/target_repository_impl.dart'
@@ -112,12 +126,20 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => databaseModule.secureStorage,
     );
+    gh.lazySingleton<_i593.PinHasher>(() => _i593.PinHasher());
+    gh.lazySingleton<_i474.SecretStore>(
+      () => _i321.KeystoreSecretStore(gh<_i558.FlutterSecureStorage>()),
+    );
     gh.lazySingleton<_i295.NotificationScheduler>(
       () => _i1012.LocalNotificationScheduler(),
     );
     gh.lazySingleton<_i397.DatabaseKeyStore>(
       () => _i397.DatabaseKeyStore(gh<_i558.FlutterSecureStorage>()),
     );
+    gh.lazySingleton<_i474.BiometricAuthenticator>(
+      () => _i321.LocalBiometricAuthenticator(),
+    );
+    gh.lazySingleton<_i474.SecureScreen>(() => _i321.ChannelSecureScreen());
     gh.lazySingleton<_i974.AppDatabase>(
       () => databaseModule.database(gh<_i397.DatabaseKeyStore>()),
     );
@@ -141,6 +163,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i848.GlucoseRepository>(
       () => _i27.GlucoseRepositoryImpl(gh<_i305.GlucoseDao>()),
+    );
+    gh.lazySingleton<_i1054.SecurityRepository>(
+      () => _i729.SecurityRepositoryImpl(
+        gh<_i851.SettingsDao>(),
+        gh<_i474.SecretStore>(),
+        gh<_i593.PinHasher>(),
+      ),
     );
     gh.factory<_i837.RemindersCubit>(
       () => _i837.RemindersCubit(
@@ -197,6 +226,14 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i308.PlanReminderSchedule>(),
       ),
     );
+    gh.lazySingleton<_i210.ResetAppData>(
+      () => _i210.ResetAppData(
+        gh<_i974.AppDatabase>(),
+        gh<_i1054.SecurityRepository>(),
+        gh<_i20.ReminderSync>(),
+        gh<_i295.NotificationScheduler>(),
+      ),
+    );
     gh.factory<_i521.SaveTargets>(
       () => _i521.SaveTargets(
         gh<_i634.TargetRepository>(),
@@ -205,6 +242,14 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i135.GetTargets>(
       () => _i135.GetTargets(gh<_i634.TargetRepository>()),
+    );
+    gh.lazySingleton<_i432.AppLockCubit>(
+      () => _i432.AppLockCubit(
+        gh<_i1054.SecurityRepository>(),
+        gh<_i474.BiometricAuthenticator>(),
+        gh<_i474.SecureScreen>(),
+        gh<_i210.ResetAppData>(),
+      ),
     );
     gh.factory<_i534.ResetTargets>(
       () => _i534.ResetTargets(gh<_i521.SaveTargets>()),

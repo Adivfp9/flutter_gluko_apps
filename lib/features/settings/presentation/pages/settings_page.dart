@@ -43,6 +43,14 @@ class SettingsPage extends StatelessWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => context.pushNamed(AppRoute.reminders),
                 ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.lock_outline),
+                  title: const Text('Keamanan'),
+                  subtitle: const Text('PIN dan biometrik.'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.pushNamed(AppRoute.security),
+                ),
               ],
             ),
           ),
@@ -52,12 +60,6 @@ class SettingsPage extends StatelessWidget {
           const Card(
             child: Column(
               children: [
-                _UpcomingSetting(
-                  icon: Icons.lock_outline,
-                  title: 'Keamanan',
-                  subtitle: 'PIN dan biometrik · Sprint 4',
-                ),
-                Divider(height: 1),
                 _UpcomingSetting(
                   icon: Icons.backup_outlined,
                   title: 'Backup & restore',
